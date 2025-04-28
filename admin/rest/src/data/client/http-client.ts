@@ -23,10 +23,7 @@ Axios.interceptors.request.use((config) => {
     token = JSON.parse(cookies)['token'];
   }
 
-  config.headers = {
-    ...config.headers,
-    Authorization: `Bearer ${token}`,
-  };
+  config.headers.set('Authorization', `Bearer ${token}`);
   return config;
 });
 

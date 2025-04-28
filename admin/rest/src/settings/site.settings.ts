@@ -54,18 +54,18 @@ export const siteSettings = {
       {
         href: Routes.terminal.list,
         label: 'sidebar-nav-item-terminals',
-        icon: 'UsersIcon',
+        icon: 'OrdersIcon',
       },
       {
         href: Routes.transaction.list,
         label: 'sidebar-nav-item-transactions',
-        icon: 'UsersIcon',
+        icon: 'WithdrawIcon',
       },
-      {
-        href: Routes.adminMyShops,
-        label: 'sidebar-nav-item-my-shops',
-        icon: 'MyShopIcon',
-      },
+      // {
+      //   href: Routes.adminMyShops,
+      //   label: 'sidebar-nav-item-my-shops',
+      //   icon: 'MyShopIcon',
+      // },
       // {
       //   href: Routes.product.list,
       //   label: 'sidebar-nav-item-products',

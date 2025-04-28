@@ -16,6 +16,9 @@ import {
   hasAccess,
   setAuthCredentials,
 } from '@/utils/auth-utils';
+import { useMutation } from 'react-query';
+import axiosInstance from '@/utils/fetch-function';
+import { log } from 'console';
 
 const loginFormSchema = yup.object().shape({
   email: yup
@@ -29,6 +32,19 @@ const LoginForm = () => {
   const { t } = useTranslation();
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const { mutate: login, isLoading, error } = useLogin();
+  const loginMutation = useMutation(
+    () =>
+      axiosInstance.post('/usermanager/weblogin', {
+        username: 'MT83332567',
+        password: '123456',
+        userlang: 'en',
+        deviceId: '000',
+        channelType: 'WEB',
+      }),
+    {
+      onSuccess: (data) => {},
+    }
+  );
 
   function onSubmit({ email, password }: LoginInput) {
     login(
@@ -52,6 +68,7 @@ const LoginForm = () => {
         onError: () => {},
       }
     );
+    loginMutation.mutate();
   }
 
   return (

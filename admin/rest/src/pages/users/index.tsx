@@ -45,18 +45,16 @@ export default function Customers() {
     <>
       <Card className="mb-8 flex flex-col items-center md:flex-row">
         <div className="mb-4 md:mb-0 md:w-1/4">
-          <h1 className="text-lg font-semibold text-heading">
-            {t('form:input-label-customers')}
-          </h1>
+          <h1 className="text-lg font-semibold text-heading">Users</h1>
         </div>
 
-        <div className="ms-auto flex w-full items-center md:w-3/4">
+        <div className="flex w-full items-center ms-auto md:w-3/4">
           <Search onSearch={handleSearch} />
           <LinkButton
             href={`${Routes.user.create}`}
-            className="ms-4 md:ms-6 h-12"
+            className="h-12 ms-4 md:ms-6"
           >
-            <span>+ {t('form:button-label-add-customer')}</span>
+            <span>+ Add Users</span>
           </LinkButton>
         </div>
       </Card>
