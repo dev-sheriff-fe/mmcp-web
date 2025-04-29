@@ -20,6 +20,8 @@ import { ArrowDown } from '@/components/icons/arrow-down';
 import { ArrowUp } from '@/components/icons/arrow-up';
 import { adminOnly } from '@/utils/auth-utils';
 import { Tab } from '@headlessui/react';
+import AddCollectionModal from '@/components/product/collection-form';
+
 
 export default function ProductsPage() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -32,6 +34,8 @@ export default function ProductsPage() {
   const [sortedBy, setColumn] = useState<SortOrder>(SortOrder.Desc);
   const [visible, setVisible] = useState(false);
   const [selectedTab, setSelectedTab] = useState(0);
+  const [isLinkModalOpen, setIsLinkModalOpen] = useState(false);
+
 
   const toggleVisible = () => {
     setVisible((v) => !v);
@@ -97,14 +101,23 @@ export default function ProductsPage() {
             </span>
           </LinkButton>
 
-          <LinkButton
+          <button
+              onClick={() => setIsLinkModalOpen(true)}
+              className="ml-5 inline-flex items-center justify-center flex-shrink-0 font-semibold leading-none rounded outline-none transition duration-300 ease-in-out focus:outline-none focus:shadow bg-accent text-light border border-transparent hover:bg-accent-hover px-5 py-0 h-12"
+            >
+            <span>
+              + {t('form:button-label-add')} {t('form:button-label-collection')}
+            </span>
+          </button>
+
+          {/* <LinkButton
             href={`${Routes.collection.create}`}
             className="h-12 w-full md:w-auto md:ms-6"
         >
             <span>
               + {t('form:button-label-add')} {t('form:button-label-collection')}
             </span>
-          </LinkButton>
+          </LinkButton> */}
 
           <button
             className="mt-5 flex items-center whitespace-nowrap text-base font-semibold text-accent md:mt-0 md:ms-5"
@@ -192,6 +205,11 @@ export default function ProductsPage() {
           </Tab.Panels>
         </Tab.Group>
       </div>
+      
+      <AddCollectionModal
+        open={isLinkModalOpen}
+        onClose={() => setIsLinkModalOpen(false)}
+      />
     </>
   );
 }

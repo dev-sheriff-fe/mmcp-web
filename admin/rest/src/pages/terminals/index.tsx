@@ -32,7 +32,7 @@ export default function TerminalsPage() {
   const [visible, setVisible] = useState(false);
   const [terminalId, setTerminalId] = useState<string>('');
   const [status, setStatus] = useState<string>('');
-  const [isLinkModalOpen, setIsLinkModalOpen] = useState(false); // State for modal
+  const [isLinkModalOpen, setIsLinkModalOpen] = useState(false);
 
   const { merchantClasses: terminals, loading, error } = useShippingClassesQuery({
     name: searchTerm,

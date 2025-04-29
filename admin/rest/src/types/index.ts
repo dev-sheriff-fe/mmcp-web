@@ -1189,8 +1189,8 @@ export interface ShippingQueryOptions extends QueryOptions {
   transactionType: string;
   category?: string;
   status?: string;
-  startDate?: string; // ISO string format
-  endDate?: string; // ISO string format
+  startDate?: string; 
+  endDate?: string; 
   rrn?: string;
   merchantCode?: string;
   terminalId?: string;

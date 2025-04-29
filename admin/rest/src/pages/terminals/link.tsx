@@ -46,7 +46,6 @@ const branchCodeOptions = [
 const LinkTerminalModal = ({ open, onClose, data: propData }: LinkTerminalModalProps) => {
   const { t } = useTranslation();
 
-  // Use context data if available, otherwise use props
   const contextData = useModalState();
   const contextClose = useModalAction().closeModal;
   
@@ -72,19 +71,21 @@ const LinkTerminalModal = ({ open, onClose, data: propData }: LinkTerminalModalP
 
   function onSubmit(values: FormValues) {
     console.log('Terminal linking submitted:', values);
-    // Handle form submission here
+
     closeModal();
   }
 
   const content = (
     <div className="m-auto w-[800px] rounded bg-light p-7 ">
-      <h2 className="mb-6 text-lg font-semibold">
-        {t('form:title-link-terminal')}
-      </h2>
+      <div className="flex border-b border-dashed border-border-base py-2 sm:py-4">
+        <h1 className="text-lg font-semibold text-heading">
+          {t('form:title-link-terminal')}
+        </h1>
+      </div>
       
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
 
-        <div className='grid gap-5 grid-cols-1 md:grid-cols-2'>
+        <div className='grid gap-5 grid-cols-1 md:grid-cols-2 mt-8'>
           <Input
             label={t('form:input-label-terminal-id')}
             {...register('terminalId', {
@@ -177,7 +178,6 @@ const LinkTerminalModal = ({ open, onClose, data: propData }: LinkTerminalModalP
     </div>
   );
 
-  // If open prop is provided, use it as controlled modal
   if (typeof open !== 'undefined') {
     return (
       <Modal open={open} onClose={closeModal}>
