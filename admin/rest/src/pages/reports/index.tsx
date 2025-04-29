@@ -16,7 +16,6 @@ import cn from 'classnames';
 import { ArrowDown } from '@/components/icons/arrow-down';
 import { ArrowUp } from '@/components/icons/arrow-up';
 import CategoryTypeFilter from '@/components/terminal/category-type-filter';
-import LinkTerminalModal from './link';
 import LinkButton from '@/components/ui/link-button';
 
 export default function TerminalsPage() {
@@ -76,20 +75,22 @@ export default function TerminalsPage() {
         <div className="flex w-full flex-col items-center md:flex-row">
           <div className="mb-4 md:mb-0 md:w-1/4">
             <h1 className="text-xl font-semibold text-heading">
-              {t('form:input-label-terminals')}
+              {t('form:input-label-report')}
             </h1>
           </div>
 
           <div className="flex w-full flex-col items-center space-y-4 ms-auto md:flex-row md:space-y-0 xl:w-1/2">
             <Search onSearch={handleSearch} />
 
-            <button
-              onClick={() => setIsLinkModalOpen(true)}
-              className="ml-5 inline-flex items-center justify-center flex-shrink-0 font-semibold leading-none rounded outline-none transition duration-300 ease-in-out focus:outline-none focus:shadow bg-accent text-light border border-transparent hover:bg-accent-hover px-5 py-0 h-12"
+            <LinkButton
+              href={`${Routes.report.create}`}
+              className="h-12 w-full md:w-auto md:ms-6"
             >
-              <span>{t('form:button-label-link-terminal')}</span>
-            </button>
-
+              <span>
+                + {t('form:button-label-add')} {t('form:button-label-report')}
+              </span>
+            </LinkButton>
+            
             <button
               className="flex items-center whitespace-nowrap text-base font-semibold text-accent md:ms-5"
               onClick={toggleVisible}
@@ -119,17 +120,13 @@ export default function TerminalsPage() {
         </div>
       </Card>
 
-      <TerminalList
+      {/* <TerminalList
         onOrder={setOrder}
         onSort={setColumn}
         merchants={terminals}
-      />
+      /> */}
 
       {/* Link Terminal Modal */}
-      <LinkTerminalModal
-        open={isLinkModalOpen}
-        onClose={() => setIsLinkModalOpen(false)}
-      />
     </>
   );
 }

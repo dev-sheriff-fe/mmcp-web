@@ -1183,6 +1183,8 @@ export interface TaxQueryOptions extends QueryOptions {
 export interface ShippingQueryOptions extends QueryOptions {
   name: string;
   type: string;
+  code: string;
+  merchantName: string;
   categories: string;
   transactionType: string;
   category?: string;
@@ -1210,6 +1212,7 @@ export interface ProductQueryOptions extends QueryOptions {
   type: string;
   name: string;
   categories: string;
+  terminals: string;
   tags: string;
   author: string;
   price: string;

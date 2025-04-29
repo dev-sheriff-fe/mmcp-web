@@ -21,3 +21,5 @@ export { FountainPenIcon } from '@/components/icons/sidebar/fountain-pen';
 export { CalendarScheduleIcon } from '@/components/icons/sidebar/calendar-schedule';
 export { ReviewIcon } from '@/components/icons/sidebar/review';
 export { QuestionIcon } from '@/components/icons/sidebar/question';
+export { ReportsIcon } from '@/components/icons/sidebar/reports';
+export { MerchantsIcon } from '@/components/icons/sidebar/merchants';

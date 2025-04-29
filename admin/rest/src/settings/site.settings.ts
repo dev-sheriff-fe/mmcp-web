@@ -47,6 +47,16 @@ export const siteSettings = {
         icon: 'UsersIcon',
       },
       {
+        href: Routes.product.list,
+        label: 'sidebar-nav-item-products',
+        icon: 'ProductsIcon',
+      },
+      {
+        href: Routes.transaction.list,
+        label: 'sidebar-nav-item-transactions',
+        icon: 'WithdrawIcon',
+      },
+      {
         href: Routes.merchant.list,
         label: 'sidebar-nav-item-merchants',
         icon: 'UsersIcon',
@@ -57,25 +67,20 @@ export const siteSettings = {
         icon: 'OrdersIcon',
       },
       {
-        href: Routes.transaction.list,
-        label: 'sidebar-nav-item-transactions',
-        icon: 'WithdrawIcon',
+        href: Routes.adminMyShops,
+        label: 'sidebar-nav-item-my-shops',
+        icon: 'MyShopIcon',
       },
       // {
-      //   href: Routes.adminMyShops,
-      //   label: 'sidebar-nav-item-my-shops',
-      //   icon: 'MyShopIcon',
+      //   href: Routes.report.list,
+      //   label: 'sidebar-nav-item-reports',
+      //   icon: 'ReportsIcon',
       // },
       // {
-      //   href: Routes.product.list,
-      //   label: 'sidebar-nav-item-products',
-      //   icon: 'ProductsIcon',
+      //   href: Routes.attribute.list,
+      //   label: 'sidebar-nav-item-attributes',
+      //   icon: 'AttributeIcon',
       // },
-      {
-        href: Routes.attribute.list,
-        label: 'sidebar-nav-item-attributes',
-        icon: 'AttributeIcon',
-      },
       // {
       //   href: Routes.type.list,
       //   label: 'sidebar-nav-item-groups',
@@ -126,11 +131,11 @@ export const siteSettings = {
       //   label: 'sidebar-nav-item-taxes',
       //   icon: 'TaxesIcon',
       // },
-      {
-        href: Routes.shipping.list,
-        label: 'sidebar-nav-item-shippings',
-        icon: 'ShippingsIcon',
-      },
+      // {
+      //   href: Routes.shipping.list,
+      //   label: 'sidebar-nav-item-shippings',
+      //   icon: 'ShippingsIcon',
+      // },
       // {
       //   href: Routes.withdraw.list,
       //   label: 'sidebar-nav-item-withdraws',

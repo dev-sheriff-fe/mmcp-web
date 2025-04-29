@@ -64,6 +64,12 @@ export const Routes = {
   product: {
     ...routesFactory('/products'),
   },
+  report: {
+    ...routesFactory('/reports'),
+  },
+  collection: {
+    ...routesFactory('/collections'),
+  },
   shop: {
     ...routesFactory('/shops'),
   },

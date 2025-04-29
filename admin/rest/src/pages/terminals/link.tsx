@@ -4,16 +4,19 @@ import {
   useModalAction,
   useModalState,
 } from '@/components/ui/modal/modal.context';
-import TextArea from '@/components/ui/text-area';
-import Image from 'next/image';
-import { useTranslation } from 'next-i18next';
-import { siteSettings } from '@/settings/site.settings';
-import { useReplyQuestionMutation } from '@/data/question';
+import Input from '@/components/ui/input';
+import SelectInput from '@/components/ui/select-input';
 import Modal from '@/components/ui/modal/modal';
+import { useTranslation } from 'next-i18next';
 
 type FormValues = {
-  answer: string;
-  reply_question_answer: string;
+  terminalId: string;
+  terminalSerialNo: string;
+  locationName: string;
+  virtualAccountNo: string;
+  status: string;
+  tellers: string[];
+  branchCode: string;
 };
 
 interface LinkTerminalModalProps {
@@ -22,10 +25,26 @@ interface LinkTerminalModalProps {
   data?: any;
 }
 
+const statusOptions = [
+  { id: 'active', name: 'Active' },
+  { id: 'inactive', name: 'Inactive' },
+  { id: 'maintenance', name: 'Maintenance' },
+];
+
+const tellerOptions = [
+  { id: 'teller1', name: 'Teller 1' },
+  { id: 'teller2', name: 'Teller 2' },
+  { id: 'teller3', name: 'Teller 3' },
+];
+
+const branchCodeOptions = [
+  { id: 'branch001', name: 'Branch 001 (Main)' },
+  { id: 'branch002', name: 'Branch 002' },
+  { id: 'branch003', name: 'Branch 003' },
+];
+
 const LinkTerminalModal = ({ open, onClose, data: propData }: LinkTerminalModalProps) => {
   const { t } = useTranslation();
-  const { mutate: replyQuestion, isLoading: loading } =
-    useReplyQuestionMutation();
 
   // Use context data if available, otherwise use props
   const contextData = useModalState();
@@ -37,76 +56,124 @@ const LinkTerminalModal = ({ open, onClose, data: propData }: LinkTerminalModalP
   const {
     register,
     handleSubmit,
+    control,
     formState: { errors },
   } = useForm<FormValues>({
     defaultValues: {
-      answer: data?.answer,
+      terminalId: data?.terminalId || '',
+      terminalSerialNo: data?.terminalSerialNo || '',
+      locationName: data?.locationName || '',
+      virtualAccountNo: data?.virtualAccountNo || '',
+      status: data?.status || 'active',
+      tellers: data?.tellers || [],
+      branchCode: data?.branchCode || '',
     },
   });
 
-  function onSubmit({ answer }: FormValues) {
-    replyQuestion({
-      id: data?.id as string,
-      answer,
-    });
+  function onSubmit(values: FormValues) {
+    console.log('Terminal linking submitted:', values);
+    // Handle form submission here
     closeModal();
   }
 
   const content = (
-    <div className="m-auto w-full max-w-lg rounded bg-light sm:w-[32rem]">
-      <div className="flex items-center border-b border-border-200 p-7">
-        <div className="flex-shrink-0 rounded border border-border-100">
-          <Image
-            src={
-              data?.product?.image?.thumbnail ??
-              siteSettings.product.placeholder
-            }
-            alt={data?.product?.name}
-            width={96}
-            height={96}
-            className="overflow-hidden rounded object-fill"
+    <div className="m-auto w-[800px] rounded bg-light p-7 ">
+      <h2 className="mb-6 text-lg font-semibold">
+        {t('form:title-link-terminal')}
+      </h2>
+      
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+
+        <div className='grid gap-5 grid-cols-1 md:grid-cols-2'>
+          <Input
+            label={t('form:input-label-terminal-id')}
+            {...register('terminalId', {
+              required: `${t('form:error-terminal-id-required')}`,
+            })}
+            variant="outline"
+            error={t(errors.terminalId?.message!)}
+          />
+          
+          <Input
+            label={t('form:input-label-terminal-serial-no')}
+            {...register('terminalSerialNo', {
+              required: `${t('form:error-terminal-serial-no-required')}`,
+            })}
+            variant="outline"
+            error={t(errors.terminalSerialNo?.message!)}
+          />
+          
+          <Input
+            label={t('form:input-label-location-name')}
+            {...register('locationName', {
+              required: `${t('form:error-location-name-required')}`,
+            })}
+            variant="outline"
+            error={t(errors.locationName?.message!)}
+          />
+          
+          <Input
+            label={t('form:input-label-virtual-account-no')}
+            {...register('virtualAccountNo')}
+            variant="outline"
+            error={t(errors.virtualAccountNo?.message!)}
           />
         </div>
 
-        <div className="ms-7">
-          <h3 className="mb-2 text-sm font-semibold text-heading md:text-base">
-            {data?.product?.name}
-          </h3>
-          <div className="text-sm text-body text-opacity-80">
-            {t('common:text-product-id')}:{' '}
-            <span className="font-semibold text-accent">
-              {data?.product?.id}
-            </span>
+        <div className='grid gap-5 grid-cols-1 md:grid-cols-2'>
+          <div>
+            <label className="mb-2 block text-sm font-semibold text-body">
+              {t('form:input-label-status')}
+            </label>
+            <SelectInput
+              name="status"
+              control={control}
+              getOptionLabel={(option: any) => option.name}
+              getOptionValue={(option: any) => option.id}
+              options={statusOptions}
+            />
+          </div>
+          
+          <div>
+            <label className="mb-2 block text-sm font-semibold text-body">
+              {t('form:input-label-tellers')}
+            </label>
+            <SelectInput
+              name="tellers"
+              control={control}
+              getOptionLabel={(option: any) => option.name}
+              getOptionValue={(option: any) => option.id}
+              options={tellerOptions}
+              isMulti
+            />
+          </div>
+          
+          <div>
+            <label className="mb-2 block text-sm font-semibold text-body">
+              {t('form:input-label-branch-code')}
+            </label>
+            <SelectInput
+              name="branchCode"
+              control={control}
+              getOptionLabel={(option: any) => option.name}
+              getOptionValue={(option: any) => option.id}
+              options={branchCodeOptions}
+              rules={{ required: `${t('form:error-branch-code-required')}` }}
+            />
+            {errors.branchCode && (
+              <p className="mt-1 text-xs text-red-500">
+                {t(errors.branchCode.message!)}
+              </p>
+            )}
           </div>
         </div>
-      </div>
-      <div className="px-7 pt-6 pb-7">
-        <div className="mb-4 text-sm font-semibold text-heading md:text-base">
-          <span className="me-1 inline-block uppercase">Q:</span>
-          {data?.question}
-        </div>
-        <form
-          className="flex w-full flex-col"
-          onSubmit={handleSubmit(onSubmit)}
-        >
-          <TextArea
-            {...register('answer', {
-              required: `${t('form:error-answer-required')}`,
-            })}
-            placeholder={t('form:input-answer-placeholder')}
-            error={t(errors.answer?.message!)}
-            className="mb-4"
-          />
-          <Button
-            type="submit"
-            loading={loading}
-            disabled={loading}
-            className="ms-auto"
-          >
-            {t('form:button-text-reply')}
+        
+        <div className="flex justify-end pt-4">
+          <Button type="submit">
+            {t('form:button-label-link-terminal')}
           </Button>
-        </form>
-      </div>
+        </div>
+      </form>
     </div>
   );
 
@@ -119,7 +186,6 @@ const LinkTerminalModal = ({ open, onClose, data: propData }: LinkTerminalModalP
     );
   }
 
-  // Otherwise return just the content (will be used with modal context)
   return content;
 };
 
