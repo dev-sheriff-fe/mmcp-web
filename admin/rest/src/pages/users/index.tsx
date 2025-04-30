@@ -12,6 +12,8 @@ import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { Routes } from '@/config/routes';
 import { SortOrder } from '@/types';
 import { adminOnly } from '@/utils/auth-utils';
+import { useQuery } from 'react-query';
+import axiosInstance from '@/utils/fetch-function';
 
 export default function Customers() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -28,8 +30,39 @@ export default function Customers() {
     orderBy,
     sortedBy,
   });
+  const { data, isLoading } = useQuery(
+    'users',
+    () =>
+      axiosInstance.request({
+        method: 'GET',
+        url: '/usermanager/getUserMasterList',
+        params: {
+          pageNumber: page,
+          pageSize: 20,
+          name: searchTerm,
+          role: '',
+          mobileNo: '',
+        },
+      }),
+    {}
+  );
+  const newPaginatorInfo = {
+    currentPage: page,
+    firstPageUrl: '',
+    from: 1,
+    lastPage: data?.data?.totalPages,
+    lastPageUrl: '',
+    links: [],
+    nextPageUrl: null,
+    path: '',
+    perPage: 20,
+    prevPageUrl: null,
+    to: 10,
+    total: data?.data?.totalCount,
+    hasMorePages: data?.data?.totalPages > page,
+  };
 
-  if (loading) return <Loader text={t('common:text-loading')} />;
+  if (isLoading || loading) return <Loader text={t('common:text-loading')} />;
   if (error) return <ErrorMessage message={error.message} />;
 
   function handleSearch({ searchText }: { searchText: string }) {
@@ -61,8 +94,10 @@ export default function Customers() {
 
       {loading ? null : (
         <CustomerList
-          customers={users}
-          paginatorInfo={paginatorInfo}
+          customers={data?.data?.userInfoList ?? users ?? []}
+          paginatorInfo={
+            newPaginatorInfo.total ? newPaginatorInfo : paginatorInfo
+          }
           onPagination={handlePagination}
           onOrder={setOrder}
           onSort={setColumn}

@@ -51,45 +51,46 @@ const MerchantList = ({ merchants, onSort, onOrder }: IProps) => {
     },
     {
       title: t('table:table-item-merchant-id'),
-      dataIndex: 'id',
-      key: 'id',
+      dataIndex: 'merchantId',
+      key: 'merchantId',
       align: 'center',
-      width: 50,
+      width: 240,
     },
     {
       title: (
         <TitleWithSort
           title={t('table:table-item-name')}
           ascending={
-            sortingObj.sort === SortOrder.Asc && sortingObj.column === 'name'
+            sortingObj.sort === SortOrder.Asc &&
+            sortingObj.column === 'businessName'
           }
-          isActive={sortingObj.column === 'name'}
+          isActive={sortingObj.column === 'businessName'}
         />
       ),
       className: 'cursor-pointer',
-      dataIndex: 'name',
-      key: 'name',
+      dataIndex: 'businessName',
+      key: 'businessName',
       align: alignLeft,
-      width: 80,
-      onHeaderCell: () => onHeaderClick('name'),
+      width: 140,
+      onHeaderCell: () => onHeaderClick('businessName'),
     },
     {
       title: t('table:table-item-email'),
-      dataIndex: 'name',
+      dataIndex: 'email',
       key: 'email',
       align: alignLeft,
-      width: 80,
+      width: 200,
     },
     {
       title: t('table:table-item-type-of-business'),
-      dataIndex: 'name',
+      dataIndex: 'businessType',
       key: 'businessType',
       align: 'center',
-      width: 80,
+      width: 120,
     },
     {
       title: t('table:table-item-terminal-id'),
-      dataIndex: 'name',
+      dataIndex: 'terminalId',
       key: 'terminalId',
       align: 'center',
       width: 80,
@@ -116,10 +117,10 @@ const MerchantList = ({ merchants, onSort, onOrder }: IProps) => {
     // },
     {
       title: t('table:table-item-status'),
-      dataIndex: 'name',
+      dataIndex: 'status',
       key: 'status',
       align: 'center',
-      width: 80,
+      width: 100,
       render: (status: string) => (
         <span className="capitalize">{status?.toLowerCase()}</span>
       ),

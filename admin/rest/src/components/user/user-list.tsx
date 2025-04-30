@@ -65,22 +65,21 @@ const CustomerList = ({
       key: 'serialNo',
       align: 'center',
       width: 80,
-      render: (_: any, __: any, index: number) => (
-        <span>{index + 1}</span>
-      ),
+      render: (_: any, __: any, index: number) => <span>{index + 1}</span>,
     },
     {
       title: (
         <TitleWithSort
           title={t('table:table-item-username')}
           ascending={
-            sortingObj.sort === SortOrder.Asc && sortingObj.column === 'username'
+            sortingObj.sort === SortOrder.Asc &&
+            sortingObj.column === 'username'
           }
           isActive={sortingObj.column === 'username'}
         />
       ),
       className: 'cursor-pointer',
-      dataIndex: 'name',
+      dataIndex: 'username',
       key: 'username',
       align: alignLeft,
       onHeaderCell: () => onHeaderClick('username'),
@@ -93,9 +92,7 @@ const CustomerList = ({
       dataIndex: 'name',
       key: 'fullName',
       align: alignLeft,
-      // render: (_: any, record: User) => (
-      //   <span>{`${record.firstName} ${record.lastName}`}</span>
-      // ),
+      render: (_: any, record: User) => <span>{`${record?.fullname} `}</span>,
     },
     {
       title: (
@@ -118,57 +115,56 @@ const CustomerList = ({
       dataIndex: 'mobileNo',
       key: 'mobileNo',
       align: 'center',
+      render: (mobileNo: any) => <span className="capitalize">{mobileNo}</span>,
     },
     {
       title: t('table:table-item-user-role'),
-      dataIndex: 'name',
+      dataIndex: 'userRole',
       key: 'userRole',
       align: 'center',
-      // render: (userRole: any) => (
-      //   <span className="capitalize">{userRole}</span>
-      // ),
+      render: (userRole: any) => <span className="capitalize">{userRole}</span>,
     },
     {
       title: t('table:table-item-status'),
-      dataIndex: 'is_active',
-      key: 'is_active',
+      dataIndex: 'status',
+      key: 'status',
       align: 'center',
-      render: (isActive: boolean) => (
+      render: (status: string) => (
         <Badge
-          text={isActive ? t('common:active') : t('common:inactive')}
-          color={isActive ? 'bg-accent' : 'bg-red-500'}
+          text={status ? t('common:active') : t('common:inactive')}
+          color={status ? 'bg-accent' : 'bg-red-500'}
         />
       ),
     },
     {
       title: t('table:table-item-branch'),
-      dataIndex: 'name',
-      key: 'branchStore',
+      dataIndex: 'branchCode',
+      key: 'branchCode',
       align: 'center',
-      // render: (branchStore: any) => branchStore.name,
+      render: (branchCode: any) => branchCode,
     },
-    {
-      title: t('table:table-item-actions'),
-      dataIndex: 'id',
-      key: 'actions',
-      align: 'right',
-      render: function Render(id: string, { is_active }: any) {
-        const { data } = useMeQuery();
-        return (
-          <>
-            {data?.id != id && (
-              <ActionButtons
-                id={id}
-                userStatus={true}
-                isUserActive={is_active}
-                showAddWalletPoints={true}
-                showMakeAdminButton={true}
-              />
-            )}
-          </>
-        );
-      },
-    },
+    // {
+    //   title: t('table:table-item-actions'),
+    //   dataIndex: 'id',
+    //   key: 'actions',
+    //   align: 'right',
+    //   render: function Render(id: string, { status }: any) {
+    //     const { data } = useMeQuery();
+    //     return (
+    //       <>
+    //         {data?.id != id && (
+    //           <ActionButtons
+    //             id={id}
+    //             userStatus={true}
+    //             isUserActive={status?.toLowerCase() === 'active'}
+    //             showAddWalletPoints={true}
+    //             showMakeAdminButton={true}
+    //           />
+    //         )}
+    //       </>
+    //     );
+    //   },
+    // },
   ];
 
   return (

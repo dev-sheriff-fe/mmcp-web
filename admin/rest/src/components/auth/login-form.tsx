@@ -42,7 +42,9 @@ const LoginForm = () => {
         channelType: 'WEB',
       }),
     {
-      onSuccess: (data) => {},
+      onSuccess: (data) => {
+        localStorage.setItem('token', data.data.ticketID);
+      },
     }
   );
 

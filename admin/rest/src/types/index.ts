@@ -316,7 +316,7 @@ export interface MakeAdminInput {
 }
 
 export interface User {
-  id: string;
+  id: string | number;
   name: string;
   shops: Shop[];
   managed_shop: Shop;
@@ -327,6 +327,18 @@ export interface User {
   profile?: Profile;
   address: Address[];
   orders?: OrderPaginator;
+
+  firstname: string;
+  middlename: null;
+  lastname: string;
+  username: string;
+  password: null;
+
+  mobileNo: string;
+  userRole: string;
+  status: string;
+
+  fullname: string;
 }
 
 export interface UpdateUser {
@@ -935,9 +947,9 @@ export interface MerchantInput {
   terminalId: string;
   terminalSerialNo: string;
   businessLogo: File | null;
-  status?: 'active' | 'inactive' | 'pending'; 
+  status?: 'active' | 'inactive' | 'pending';
   isVerified?: boolean;
-  createdAt?: Date; 
+  createdAt?: Date;
   updatedAt?: Date;
 }
 
@@ -1189,8 +1201,8 @@ export interface ShippingQueryOptions extends QueryOptions {
   transactionType: string;
   category?: string;
   status?: string;
-  startDate?: string; 
-  endDate?: string; 
+  startDate?: string;
+  endDate?: string;
   rrn?: string;
   merchantCode?: string;
   terminalId?: string;

@@ -17,13 +17,15 @@ import cn from 'classnames';
 import { ArrowDown } from '@/components/icons/arrow-down';
 import { ArrowUp } from '@/components/icons/arrow-up';
 import MerchantTypeFilter from '@/components/merchant/category-type-filter';
+import axiosInstance from '@/utils/fetch-function';
+import { useQuery } from 'react-query';
 
 export default function MerchantsPage() {
   const { t } = useTranslation();
   const router = useRouter();
   const { id } = router.query;
   const locale = router.locale;
-  
+
   const [searchTerm, setSearch] = useState('');
   const [orderBy, setOrder] = useState('created_at');
   const [sortedBy, setColumn] = useState<SortOrder>(SortOrder.Desc);
@@ -31,7 +33,37 @@ export default function MerchantsPage() {
   const [visible, setVisible] = useState(false);
   const [name, setName] = useState<string>('');
   const [code, setCode] = useState<string>('');
-
+  const { data, isLoading } = useQuery(
+    'merchantsS',
+    () =>
+      axiosInstance.request({
+        method: 'GET',
+        url: '/merchant/all',
+        params: {
+          pageNumber: page,
+          pageSize: 20,
+          name: searchTerm,
+          role: '',
+          mobileNo: '',
+        },
+      }),
+    {}
+  );
+  const newPaginatorInfo = {
+    currentPage: page,
+    firstPageUrl: '',
+    from: 1,
+    lastPage: data?.data?.totalPages,
+    lastPageUrl: '',
+    links: [],
+    nextPageUrl: null,
+    path: '',
+    perPage: 20,
+    prevPageUrl: null,
+    to: 10,
+    total: data?.data?.totalCount,
+    hasMorePages: data?.data?.totalPages > page,
+  };
   const { merchantClasses, loading, error } = useShippingClassesQuery({
     name: searchTerm,
     orderBy,
@@ -122,7 +154,7 @@ export default function MerchantsPage() {
       <MerchantList
         onOrder={setOrder}
         onSort={setColumn}
-        merchants={merchantClasses}
+        merchants={data?.data?.content ?? merchantClasses}
       />
     </>
   );
