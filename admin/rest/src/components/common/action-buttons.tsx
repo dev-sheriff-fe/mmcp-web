@@ -13,6 +13,7 @@ import { AdminIcon } from '@/components/icons/admin-icon';
 type Props = {
   id: string;
   editModalView?: string | any;
+  editViewModal?: string | any;
   deleteModalView?: string | any;
   editUrl?: string;
   detailsUrl?: string;
@@ -24,12 +25,14 @@ type Props = {
   changeRefundStatus?: boolean;
   showMakeAdminButton?: boolean;
   showReplyQuestion?: boolean;
+  showBillerModal?: boolean;
   customLocale?: string;
 };
 
 const ActionButtons = ({
   id,
   editModalView,
+  editViewModal,
   deleteModalView,
   editUrl,
   detailsUrl,
@@ -41,6 +44,7 @@ const ActionButtons = ({
   changeRefundStatus = false,
   showMakeAdminButton = false,
   showReplyQuestion = false,
+  showBillerModal = false,
   customLocale
 }: Props) => {
   const { t } = useTranslation();
@@ -52,6 +56,10 @@ const ActionButtons = ({
 
   function handleEditModal() {
     openModal(editModalView, id);
+  }
+
+  function handleEditViewModal() {
+    openModal(editViewModal, id);
   }
 
   function handleUserStatus(type: string) {
@@ -82,6 +90,14 @@ const ActionButtons = ({
     openModal('REPLY_QUESTION', id);
   }
 
+  function handleBillerView() {
+    openModal('BILLER_VIEW', id);
+  }
+
+  function handleBillerEdit() {
+    openModal('BILLER_EDIT', id);
+  }
+
   return (
     <div className="gap-8 inline-flex w-auto items-center">
       {showReplyQuestion && (
@@ -90,6 +106,22 @@ const ActionButtons = ({
           className="text-accent transition duration-200 hover:text-accent-hover focus:outline-none"
         >
           {t('form:button-text-reply')}
+        </button>
+      )}
+      {showBillerModal && (
+        <button
+          onClick={handleBillerView}
+          className="text-accent transition duration-200 hover:text-accent-hover focus:outline-none"
+        >
+          {t('form:button-text-save-biller')}
+        </button>
+      )}
+      {showBillerModal && (
+        <button
+          onClick={handleBillerEdit}
+          className="text-accent transition duration-200 hover:text-accent-hover focus:outline-none"
+        >
+          {t('form:button-text-save-biller')}
         </button>
       )}
       {showMakeAdminButton && (
@@ -136,6 +168,15 @@ const ActionButtons = ({
           title={t('common:text-edit')}
         >
           <EditIcon width={16} />
+        </button>
+      )}
+      {editViewModal && (
+        <button
+          onClick={handleEditViewModal}
+          className="text-body transition duration-200 hover:text-heading focus:outline-none"
+          title={t('common:text-edit')}
+        >
+          <Eye width={24} />
         </button>
       )}
       {approveButton &&

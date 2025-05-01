@@ -1,0 +1,440 @@
+import Button from '@/components/ui/button';
+import Input from '@/components/ui/input';
+import { useForm } from 'react-hook-form';
+import Card from '@/components/common/card';
+import Description from '@/components/ui/description';
+import { useTranslation } from 'next-i18next';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { billerValidationSchema } from './biller-validation-schema';
+import axiosInstance from '@/utils/fetch-function';
+import { useQuery, useMutation } from 'react-query';
+import { toast } from 'react-toastify';
+import { useRouter } from 'next/router';
+import TextArea from '@/components/ui/text-area';
+import SelectInput from '@/components/ui/select-input';
+import Label from '@/components/ui/label';
+
+type FormValues = {
+  billerCode: string;
+  billerName: string;
+  bankName: string;
+  billerShortName: string;
+  billerDescription: string;
+  billerCategoryCode: string;
+  billerCategory: string;
+  logoURL: string;
+  status: string;
+  billerRef: string;
+  countryCode: string;
+  serviceProvider: string;
+  minAmount: number;
+  maxAmount: number;
+  products: Array<{
+    productCode: string;
+    productDesc: string;
+    productName: string;
+    amount: number;
+    amountType: string;
+    status: string;
+  }>;
+  paymentData: Array<{
+    fieldID: string;
+    fieldDataType: string;
+    fieldName: string;
+    fieldValue: string;
+    maxLength: number;
+    mandatoryFlag: string;
+    inputOrOutput: string;
+  }>;
+};
+
+const defaultValues = {
+  billerCode: '',
+  billerName: '',
+  bankName: '',
+  billerShortName: '',
+  billerDescription: '',
+  billerCategoryCode: '',
+  billerCategory: '',
+  logoURL: '',
+  status: 'Active',
+  billerRef: '',
+  countryCode: 'NG',
+  serviceProvider: '',
+  minAmount: 0,
+  maxAmount: 0,
+  products: [
+    {
+      productCode: '',
+      productDesc: '',
+      productName: '',
+      amount: 0,
+      amountType: 'FIXED',
+      status: 'Active',
+    },
+  ],
+  paymentData: [
+    {
+      fieldID: '',
+      fieldDataType: 'STRING',
+      fieldName: '',
+      fieldValue: '',
+      maxLength: 0,
+      mandatoryFlag: 'Y',
+      inputOrOutput: 'I',
+    },
+  ],
+};
+
+const amountOptions = [
+  { id: 'fixed', name: 'FIXED' },
+  { id: 'variable', name: 'VARIABLE' }, 
+];
+
+const datatypeOptions = [
+  { id: 'STRING', name: 'String' },
+  { id: 'NUMBER', name: 'Number' },
+  { id: 'DATE', name: 'Date' },
+];
+
+const inputOrOutputOptions = [
+  { id: 'I', name: 'Input' },
+  { id: 'O', name: 'Output' },
+];
+
+const mandatoryFlagOptions = [
+  { id: 'Y', name: 'Yes' },
+  { id: 'N', name: 'No' },
+];
+
+const BillerCreateForm = () => {
+
+  const { data: statusData } = useQuery(
+    'status',
+    () =>
+      axiosInstance.get(
+        'lookupdata/getdatabycategorycode/STATUS?entityCode=ETZ'
+      ),
+    {
+      select: (data) =>
+        data.data.map((item: any) => ({
+          id: item.lookupCode,
+          name: item.lookupName,
+          description: item.lookupDesc,
+        })),
+    }
+  );
+  
+  const { t } = useTranslation();
+  const router = useRouter();
+
+  const {
+    register,
+    handleSubmit,
+    setError,
+    control,
+    formState: { errors },
+  } = useForm<FormValues>({
+    defaultValues,
+    resolver: yupResolver(billerValidationSchema),
+  });
+
+  const { mutate: createBiller, isLoading: saving } = useMutation(
+    (formData: FormValues) =>
+      axiosInstance.request({
+        method: 'POST',
+        url: 'billpayment/createBiller',
+        data: formData,
+      }),
+    {
+      onSuccess: (data) => {
+        if (data?.data?.code !== '000') {
+          toast.error(data?.data?.desc);
+          return;
+        }
+        toast.success(t('form:biller-created-success'));
+        router.back();
+      },
+      onError: (error: any) => {
+        if (error?.response?.data) {
+          if (error.response.status === 400) {
+            toast.error('Bad request');
+          } else if (error.response.status === 422) {
+            toast.error(t('common:error-creating-biller'));
+          } else if (error.response.status === 500) {
+            toast.error(t('common:error-creating-biller'));
+          }
+          Object.keys(error.response.data).forEach((field: any) => {
+            setError(field, {
+              type: 'manual',
+              message: error.response.data[field][0],
+            });
+          });
+        } else {
+          toast.error(t('common:error-creating-biller'));
+        }
+      },
+    }
+  );
+
+  const onSubmit = (values: FormValues) => {
+    createBiller(values);
+  };
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <div className="my-5 flex flex-wrap sm:my-8">
+        <Description
+          title={t('form:item-description')}
+          details={t('form:biller-form-info-help-text')}
+          className="w-full px-0 pb-5 sm:w-4/12 sm:py-8 sm:pe-4 md:w-1/3 md:pe-5"
+        />
+        <Card className="w-full sm:w-8/12 md:w-2/3">
+          <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+            <div className="mt-2 pt-5 md:col-span-2">
+              <h3 className="mb-5 text-lg font-semibold">
+                {t('form:section-title-biller-info')}
+              </h3>
+            </div>
+
+            <Input
+              label={t('form:input-label-biller-code')}
+              {...register('billerCode')}
+              variant="outline"
+              className="mb-5"
+              error={t(errors.billerCode?.message!)}
+            />
+
+            <Input
+              label={t('form:input-label-biller-name')}
+              {...register('billerName')}
+              variant="outline"
+              className="mb-5"
+              error={t(errors.billerName?.message!)}
+            />
+
+            <Input
+              label={t('form:input-label-bank-name')}
+              {...register('bankName')}
+              variant="outline"
+              className="mb-5"
+              error={t(errors.bankName?.message!)}
+            />
+
+            <Input
+              label={t('form:input-label-biller-short-name')}
+              {...register('billerShortName')}
+              variant="outline"
+              className="mb-5"
+              error={t(errors.billerShortName?.message!)}
+            />
+
+            <TextArea
+              label={t('form:input-label-biller-description')}
+              {...register('billerDescription')}
+              variant="outline"
+              className="mb-5"
+              error={t(errors.billerDescription?.message!)}
+            />
+
+            <Input
+              label={t('form:input-label-biller-category-code')}
+              {...register('billerCategoryCode')}
+              variant="outline"
+              className="mb-5"
+              error={t(errors.billerCategoryCode?.message!)}
+            />
+
+            <Input
+              label={t('form:input-label-biller-category')}
+              {...register('billerCategory')}
+              variant="outline"
+              className="mb-5"
+              error={t(errors.billerCategory?.message!)}
+            />
+
+            <Input
+              label={t('form:input-label-logo-url')}
+              {...register('logoURL')}
+              variant="outline"
+              className="mb-5"
+              error={t(errors.logoURL?.message!)}
+            />
+      
+            <div className="mb-5">
+              <Label>{t('form:input-label-status')}</Label>
+              <SelectInput
+                name="status"
+                control={control}
+                getOptionLabel={(option: any) => option.name}
+                getOptionValue={(option: any) => option.id}
+                options={statusData || []}
+                isLoading={!statusData}
+              />
+            </div>
+
+            <Input
+              label={t('form:input-label-biller-ref')}
+              {...register('billerRef')}
+              variant="outline"
+              className="mb-5"
+              error={t(errors.billerRef?.message!)}
+            />
+
+            <Input
+              label={t('form:input-label-service-provider')}
+              {...register('serviceProvider')}
+              variant="outline"
+              className="mb-5"
+              error={t(errors.serviceProvider?.message!)}
+            />
+
+            <Input
+              label={t('form:input-label-min-amount')}
+              type="number"
+              {...register('minAmount')}
+              variant="outline"
+              className="mb-5"
+              error={t(errors.minAmount?.message!)}
+            />
+
+            <Input
+              label={t('form:input-label-max-amount')}
+              type="number"
+              {...register('maxAmount')}
+              variant="outline"
+              className="mb-5"
+              error={t(errors.maxAmount?.message!)}
+            />
+
+            <div className="mb-5 md:col-span-2">
+              <h4 className="mb-3 text-sm font-semibold">
+                {t('form:section-title-products')}
+              </h4>
+              <div className="rounded border p-4">
+                <Input
+                  label={t('form:input-label-product-code')}
+                  {...register('products.0.productCode')}
+                  variant="outline"
+                  className="mb-5"
+                  error={t(errors.products?.[0]?.productCode?.message!)}
+                />
+                <Input
+                  label={t('form:input-label-product-name')}
+                  {...register('products.0.productName')}
+                  variant="outline"
+                  className="mb-5"
+                  error={t(errors.products?.[0]?.productName?.message!)}
+                />
+                <TextArea
+                  label={t('form:input-label-product-desc')}
+                  {...register('products.0.productDesc')}
+                  variant="outline"
+                  className="mb-5"
+                  error={t(errors.products?.[0]?.productDesc?.message!)}
+                />
+                <Input
+                  label={t('form:input-label-amount')}
+                  type="number"
+                  {...register('products.0.amount')}
+                  variant="outline"
+                  className="mb-5"
+                  error={t(errors.products?.[0]?.amount?.message!)}
+                />
+                <div className="mb-5">
+                  <Label>{t('form:input-label-amount-type')}</Label>
+                  <SelectInput
+                    name="products.0.amountType"
+                    control={control}
+                    getOptionLabel={(option: any) => option.name}
+                    getOptionValue={(option: any) => option.id}
+                    options={amountOptions}
+                  />
+                </div>
+                <div className="mb-5">
+                  <Label>{t('form:input-label-status')}</Label>
+                  <SelectInput
+                    name="status"
+                    control={control}
+                    getOptionLabel={(option: any) => option.name}
+                    getOptionValue={(option: any) => option.id}
+                    options={statusData || []}
+                    isLoading={!statusData}
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="mb-5 md:col-span-2">
+              <h4 className="mb-3 text-sm font-semibold">
+                {t('form:section-title-payment-data')}
+              </h4>
+              <div className="rounded border p-4">
+                <Input
+                  label={t('form:input-label-field-id')}
+                  {...register('paymentData.0.fieldID')}
+                  variant="outline"
+                  className="mb-5"
+                  error={t(errors.paymentData?.[0]?.fieldID?.message!)}
+                />
+                <Input
+                  label={t('form:input-label-field-name')}
+                  {...register('paymentData.0.fieldName')}
+                  variant="outline"
+                  className="mb-5"
+                  error={t(errors.paymentData?.[0]?.fieldName?.message!)}
+                />
+                <div className="mb-5">
+                  <Label>{t('form:input-label-field-data-type')}</Label>
+                  <SelectInput
+                    name="paymentData.0.fieldDataType"
+                    control={control}
+                    getOptionLabel={(option: any) => option.name}
+                    getOptionValue={(option: any) => option.id}
+                    options={datatypeOptions}
+                  />
+                </div>
+                <Input
+                  label={t('form:input-label-max-length')}
+                  type="number"
+                  {...register('paymentData.0.maxLength')}
+                  variant="outline"
+                  className="mb-5"
+                  error={t(errors.paymentData?.[0]?.maxLength?.message!)}
+                />
+                <div className="mb-5">
+                  <Label>{t('form:input-label-mandatory-flag')}</Label>
+                  <SelectInput
+                    name="paymentData.0.mandatoryFlag"
+                    control={control}
+                    getOptionLabel={(option: any) => option.name}
+                    getOptionValue={(option: any) => option.id}
+                    options={mandatoryFlagOptions}
+                  />
+                </div>
+                <div className="mb-5">
+                  <Label>{t('form:input-label-input-or-output')}</Label>
+                  <SelectInput
+                    name="paymentData.0.inputOrOutput"
+                    control={control}
+                    getOptionLabel={(option: any) => option.name}
+                    getOptionValue={(option: any) => option.id}
+                    options={inputOrOutputOptions}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </Card>
+      </div>
+
+      <div className="mb-4 text-end">
+        <Button type="submit" loading={saving} disabled={saving}>
+          {t('form:button-label-add-biller')}
+        </Button>
+      </div>
+    </form>
+  );
+};
+
+export default BillerCreateForm;

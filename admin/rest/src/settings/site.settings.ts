@@ -58,6 +58,11 @@ export const siteSettings = {
         icon: 'WithdrawIcon',
       },
       {
+        href: Routes.biller.list,
+        label: 'sidebar-nav-item-billers',
+        icon: 'WithdrawIcon',
+      },
+      {
         href: Routes.merchant.list,
         label: 'sidebar-nav-item-merchants',
         icon: 'UsersIcon',

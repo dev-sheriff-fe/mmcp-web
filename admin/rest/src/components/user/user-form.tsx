@@ -37,11 +37,11 @@ const defaultValues = {
   password: '',
 };
 
-const supervisorOptions = [
-  { id: 'john_doe', name: 'John Doe' },
-  { id: 'jane_smith', name: 'Jane Smith' },
-  { id: 'mike_johnson', name: 'Mike Johnson' },
-];
+// const supervisorOptions = [
+//   { id: 'john_doe', name: 'John Doe' },
+//   { id: 'jane_smith', name: 'Jane Smith' },
+//   { id: 'mike_johnson', name: 'Mike Johnson' },
+// ];
 
 const CustomerCreateForm = () => {
   const { t } = useTranslation();

@@ -62,6 +62,12 @@ const ReviewImageModal = dynamic(
 const QuestionReplyView = dynamic(
   () => import('@/components/question/question-reply-view')
 );
+const BillerView = dynamic(
+  () => import('@/components/biller/biller-view')
+);
+const BillerEdit = dynamic(
+  () => import('@/components/biller/biller-edit')
+);
 const QuestionDeleteView = dynamic(
   () => import('@/components/question/question-delete-view')
 );
@@ -155,6 +161,10 @@ function renderModal(view: MODAL_VIEWS | undefined, data: any) {
       return <SelectCustomer />;
     case 'REPLY_QUESTION':
       return <QuestionReplyView />;
+    case 'BILLER_VIEW':
+      return <BillerView />;
+    case 'BILLER_EDIT':
+      return <BillerEdit />;
     case 'DELETE_QUESTION':
       return <QuestionDeleteView />;
     case 'DELETE_REVIEW':
