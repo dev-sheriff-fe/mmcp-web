@@ -18,13 +18,15 @@ import { ArrowUp } from '@/components/icons/arrow-up';
 import CategoryTypeFilter from '@/components/terminal/category-type-filter';
 import LinkTerminalModal from './link';
 import LinkButton from '@/components/ui/link-button';
+import axiosInstance from '@/utils/fetch-function';
+import { useQuery } from 'react-query';
 
 export default function TerminalsPage() {
   const { t } = useTranslation();
   const router = useRouter();
   const { id } = router.query;
   const locale = router.locale;
-  
+
   const [searchTerm, setSearch] = useState('');
   const [orderBy, setOrder] = useState('created_at');
   const [sortedBy, setColumn] = useState<SortOrder>(SortOrder.Desc);
@@ -33,8 +35,27 @@ export default function TerminalsPage() {
   const [terminalId, setTerminalId] = useState<string>('');
   const [status, setStatus] = useState<string>('');
   const [isLinkModalOpen, setIsLinkModalOpen] = useState(false);
-
-  const { merchantClasses: terminals, loading, error } = useShippingClassesQuery({
+  const { data, isLoading } = useQuery(
+    'terminals',
+    () =>
+      axiosInstance.request({
+        method: 'GET',
+        url: '/terminals/all',
+        params: {
+          pageNumber: page,
+          pageSize: 20,
+          name: searchTerm,
+          role: '',
+          mobileNo: '',
+        },
+      }),
+    {}
+  );
+  const {
+    merchantClasses: terminals,
+    loading,
+    error,
+  } = useShippingClassesQuery({
     name: searchTerm,
     orderBy,
     sortedBy,
@@ -85,7 +106,7 @@ export default function TerminalsPage() {
 
             <button
               onClick={() => setIsLinkModalOpen(true)}
-              className="ml-5 inline-flex items-center justify-center flex-shrink-0 font-semibold leading-none rounded outline-none transition duration-300 ease-in-out focus:outline-none focus:shadow bg-accent text-light border border-transparent hover:bg-accent-hover px-5 py-0 h-12"
+              className="ml-5 inline-flex h-12 flex-shrink-0 items-center justify-center rounded border border-transparent bg-accent px-5 py-0 font-semibold leading-none text-light outline-none transition duration-300 ease-in-out hover:bg-accent-hover focus:shadow focus:outline-none"
             >
               <span>{t('form:button-label-link-terminal')}</span>
             </button>

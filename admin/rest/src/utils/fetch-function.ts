@@ -23,7 +23,7 @@ async function getToken() {
 axiosInstance.interceptors.request.use(async function (config) {
   const token = await getToken();
 
-  if (token && !config.url?.includes('Auth/Login')) {
+  if (token && !config.url?.includes('login')) {
     config.headers.Authorization = `Bearer ${token}`;
   }
   return config;
