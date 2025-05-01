@@ -8,6 +8,9 @@ import {
   SUPER_ADMIN,
   TOKEN,
 } from './constants';
+import Cookies from 'js-cookie';
+import { Routes } from '@/config/routes';
+import { toast } from 'react-toastify';
 
 export const allowedRoles = [SUPER_ADMIN, STORE_OWNER, STAFF];
 export const adminAndOwnerOnly = [SUPER_ADMIN, STORE_OWNER];
@@ -57,3 +60,13 @@ export function isAuthenticated(_cookies: any) {
     !!_cookies[PERMISSIONS].length
   );
 }
+export const logout = () => {
+  console.log('logout called');
+
+  Cookies.remove(AUTH_CRED);
+  if (window != undefined) {
+    window.location.href = Routes.login;
+    window.localStorage.removeItem('token');
+  }
+  toast.success('Logout successfully');
+};

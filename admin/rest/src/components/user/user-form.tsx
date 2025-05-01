@@ -6,23 +6,27 @@ import Card from '@/components/common/card';
 import Description from '@/components/ui/description';
 import { useTranslation } from 'next-i18next';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { customerValidationSchema } from './user-validation-schema';
+import {
+  customerValidationSchema,
+  userValidationSchema,
+} from './user-validation-schema';
 import { Permission } from '@/types';
 import SelectInput from '@/components/ui/select-input';
 import Label from '@/components/ui/label';
 import axiosInstance from '@/utils/fetch-function';
 import { useQuery, useMutation } from 'react-query';
 import { toast } from 'react-toastify';
+import { useRouter } from 'next/router';
 
 type FormValues = {
   username: string;
-  firstName: string;
-  lastName: string;
+  firstname: string;
+  lastname: string;
   email: string;
   mobileNo: string;
-  userRole: string;
-  branchStore: string;
-  status: 'active' | 'inactive'
+  userRole: any;
+  branchCode: any;
+  status: any;
   supervisor?: string;
   password?: string;
   permission: Permission;
@@ -41,12 +45,14 @@ const supervisorOptions = [
 
 const CustomerCreateForm = () => {
   const { t } = useTranslation();
-
+  const router = useRouter();
   // Fetch user roles from API
   const { data: userRolesData } = useQuery(
     'userRoles',
     () =>
-      axiosInstance.get('lookupdata/getdatabycategorycode/USER_ROLE?entityCode=ETZ'),
+      axiosInstance.get(
+        'lookupdata/getdatabycategorycode/USER_ROLE?entityCode=ETZ'
+      ),
     {
       select: (data) =>
         data.data.map((item: any) => ({
@@ -60,7 +66,9 @@ const CustomerCreateForm = () => {
   const { data: branchCodesData } = useQuery(
     'branchCodes',
     () =>
-      axiosInstance.get('lookupdata/getdatabycategorycode/BRANCH_CODE?entityCode=ETZ'),
+      axiosInstance.get(
+        'lookupdata/getdatabycategorycode/BRANCH_CODE?entityCode=ETZ'
+      ),
     {
       select: (data) =>
         data.data.map((item: any) => ({
@@ -74,7 +82,9 @@ const CustomerCreateForm = () => {
   const { data: statusData } = useQuery(
     'status',
     () =>
-      axiosInstance.get('lookupdata/getdatabycategorycode/STATUS?entityCode=ETZ'),
+      axiosInstance.get(
+        'lookupdata/getdatabycategorycode/STATUS?entityCode=ETZ'
+      ),
     {
       select: (data) =>
         data.data.map((item: any) => ({
@@ -93,7 +103,7 @@ const CustomerCreateForm = () => {
     formState: { errors },
   } = useForm<FormValues>({
     defaultValues,
-    resolver: yupResolver(customerValidationSchema),
+    resolver: yupResolver(userValidationSchema),
   });
 
   const { mutate: saveUser, isLoading: saving } = useMutation(
@@ -101,15 +111,40 @@ const CustomerCreateForm = () => {
       axiosInstance.request({
         method: 'POST',
         url: 'usermanager/saveuser',
-        data: formData,
+        data: {
+          ...formData,
+          countryCode: 'NG',
+          state: 'Lagos',
+          businessRegion: 'Lagos',
+          bvn: '00000011101',
+          userlang: 'en',
+          deviceId: '0001',
+          channelType: 'POS',
+          entityCode: 'ETZ',
+        },
       }),
     {
       onSuccess: (data) => {
+        if (data?.data?.code !== '000') {
+          {
+            toast.error(data?.data?.desc);
+            return;
+          }
+        }
         toast.success(t('form:user-created-success'));
-        console.log('User saved successfully:', data);
+        router.back();
       },
       onError: (error: any) => {
+        console.log(error);
+
         if (error?.response?.data) {
+          if (error.response.status === 400) {
+            toast.error('Bad request');
+          } else if (error.response.status === 422) {
+            toast.error(t('common:error-creating-user'));
+          } else if (error.response.status === 500) {
+            toast.error(t('common:error-creating-user'));
+          }
           Object.keys(error.response.data).forEach((field: any) => {
             setError(field, {
               type: 'manual',
@@ -126,17 +161,18 @@ const CustomerCreateForm = () => {
   const onSubmit = (values: FormValues) => {
     const payload = {
       username: values.username,
-      firstName: values.firstName,
-      lastName: values.lastName,
+      firstname: values.firstname,
+      lastname: values.lastname,
       email: values.email,
       mobileNo: values.mobileNo,
-      userRole: values.userRole,
-      branchStore: values.branchStore,
-      status: values.status,
-      supervisor: values.supervisor,
+      userRole: values.userRole?.id,
+      branchCode: values.branchCode?.id,
+      status: values.status?.id,
+
       password: values.password,
       permission: values.permission || Permission.StoreOwner,
     };
+
     saveUser(payload);
   };
 
@@ -150,8 +186,8 @@ const CustomerCreateForm = () => {
         />
         <Card className="w-full sm:w-8/12 md:w-2/3">
           <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
-            <div className="md:col-span-2 pt-5 mt-2">
-              <h3 className="text-lg font-semibold mb-5">
+            <div className="mt-2 pt-5 md:col-span-2">
+              <h3 className="mb-5 text-lg font-semibold">
                 {t('form:section-title-user-info')}
               </h3>
             </div>
@@ -166,18 +202,18 @@ const CustomerCreateForm = () => {
 
             <Input
               label={t('form:input-label-firstname')}
-              {...register('firstName')}
+              {...register('firstname')}
               variant="outline"
               className="mb-5"
-              error={t(errors.firstName?.message!)}
+              error={t(errors.firstname?.message!)}
             />
 
             <Input
               label={t('form:input-label-lastname')}
-              {...register('lastName')}
+              {...register('lastname')}
               variant="outline"
               className="mb-5"
-              error={t(errors.lastName?.message!)}
+              error={t(errors.lastname?.message!)}
             />
 
             <Input
@@ -211,7 +247,7 @@ const CustomerCreateForm = () => {
             <div className="mb-5">
               <Label>{t('form:input-label-branch-store')}</Label>
               <SelectInput
-                name="branchStore"
+                name="branchCode"
                 control={control}
                 getOptionLabel={(option: any) => option.name}
                 getOptionValue={(option: any) => option.id}
@@ -232,7 +268,7 @@ const CustomerCreateForm = () => {
               />
             </div>
 
-            <div className="mb-5">
+            {/* <div className="mb-5">
               <Label>{t('form:input-label-supervisor')}</Label>
               <SelectInput
                 name="supervisor"
@@ -241,7 +277,7 @@ const CustomerCreateForm = () => {
                 getOptionValue={(option: any) => option.id}
                 options={supervisorOptions}
               />
-            </div>
+            </div> */}
 
             <Input
               label={t('form:input-label-password')}
@@ -256,11 +292,7 @@ const CustomerCreateForm = () => {
       </div>
 
       <div className="mb-4 text-end">
-        <Button
-          type="submit"
-          loading={saving}
-          disabled={saving}
-        >
+        <Button type="submit" loading={saving} disabled={saving}>
           {t('form:button-label-add-user')}
         </Button>
       </div>

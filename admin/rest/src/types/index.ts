@@ -932,25 +932,29 @@ export interface MerchantInput {
   email: string;
   mobileNo: string;
   address: string;
-  state: string;
-  settlementType: string;
+  state?: SelectOption;
+  settlementType?: SelectOption;
   firstName: string;
   lastName: string;
   bvn: string;
-  gender: string;
+  gender?: SelectOption;
   businessName: string;
-  businessType: string;
+  businessType?: SelectOption;
   businessAddress: string;
-  bank: string;
+  bank?: SelectOption;
   settlementAccount: string;
   settlementAccountName: string;
   terminalId: string;
   terminalSerialNo: string;
   businessLogo: File | null;
-  status?: 'active' | 'inactive' | 'pending';
+  status?: SelectOption;
   isVerified?: boolean;
   createdAt?: Date;
   updatedAt?: Date;
+}
+export interface SelectOption {
+  id: string;
+  name: string;
 }
 
 export interface ShippingUpdateInput {

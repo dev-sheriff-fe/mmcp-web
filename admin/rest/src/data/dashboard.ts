@@ -1,11 +1,11 @@
 import { Product, ProductQueryOptions } from '@/types';
 import { useQuery } from 'react-query';
 import { API_ENDPOINTS } from './client/api-endpoints';
-import { dashboardClient } from '@/data/client/dashboard';
+import { dashboardClient, newDashboardClient } from '@/data/client/dashboard';
 import { productClient } from '@/data/client/product';
 
 export function useAnalyticsQuery() {
-  return useQuery([API_ENDPOINTS.ANALYTICS], dashboardClient.analytics);
+  return useQuery([API_ENDPOINTS.ANALYTICS], newDashboardClient.analytics);
 }
 
 export function usePopularProductsQuery(options: Partial<ProductQueryOptions>) {

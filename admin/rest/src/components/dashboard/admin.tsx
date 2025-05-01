@@ -20,14 +20,15 @@ export default function Dashboard() {
   const { t } = useTranslation();
   const { locale } = useRouter();
   const { data, isLoading: loading } = useAnalyticsQuery();
+
   const { price: total_revenue } = usePrice(
     data && {
-      amount: data?.totalRevenue!,
+      amount: Number(data?.totalRevenue),
     }
   );
   const { price: todays_revenue } = usePrice(
     data && {
-      amount: data?.todaysRevenue!,
+      amount: Number(data?.todaysRevenue!),
     }
   );
   const {
@@ -106,7 +107,7 @@ export default function Dashboard() {
       <div className="mb-6 flex w-full flex-wrap md:flex-nowrap">
         <ColumnChart
           widgetTitle={t('common:sale-history')}
-          colors={['#03D3B5']}
+          colors={['#007ee6']}
           series={salesByYear}
           categories={[
             t('common:january'),

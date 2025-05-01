@@ -8,20 +8,15 @@ import { useTranslation } from 'next-i18next';
 import { useMeQuery } from '@/data/user';
 
 export default function AuthorizedMenu() {
-  const { data } = useMeQuery();
   const { t } = useTranslation('common');
+  const userData = localStorage.getItem('user');
+  const user = userData ? JSON.parse(userData) : null;
 
   // Again, we're using framer-motion for the transition effect
   return (
     <Menu as="div" className="relative inline-block text-left">
       <Menu.Button className="flex items-center focus:outline-none">
-        <Avatar
-          src={
-            data?.profile?.avatar?.thumbnail ??
-            siteSettings?.avatar?.placeholder
-          }
-          alt="avatar"
-        />
+        <Avatar src={siteSettings?.avatar?.placeholder} alt="avatar" />
       </Menu.Button>
 
       <Transition
@@ -35,15 +30,15 @@ export default function AuthorizedMenu() {
       >
         <Menu.Items
           as="ul"
-          className="end-0 origin-top-end absolute mt-1 w-48 rounded bg-white shadow-md focus:outline-none"
+          className="absolute mt-1 w-48 rounded bg-white shadow-md end-0 origin-top-end focus:outline-none"
         >
-          <Menu.Item key={data?.email}>
+          <Menu.Item key={user?.id}>
             <li
               className="flex w-full flex-col space-y-1 rounded-t
-             bg-[#00b791] px-4 py-3 text-sm text-white"
+             bg-[#007ee6] px-4 py-3 text-sm text-white"
             >
-              <span className="font-semibold capitalize">{data?.name}</span>
-              <span className="text-xs">{data?.email}</span>
+              <span className="font-semibold capitalize">{user?.name}</span>
+              <span className="text-xs">{user?.email}</span>
             </li>
           </Menu.Item>
 

@@ -1,4 +1,5 @@
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
+import { logout } from './auth-utils';
 
 const axiosInstance = axios.create({
   baseURL:
@@ -27,5 +28,19 @@ axiosInstance.interceptors.request.use(async function (config) {
   }
   return config;
 });
-
+axiosInstance.interceptors.response.use(
+  function (response) {
+    return response;
+  },
+  function (error: AxiosError) {
+    if (error.response?.request.responseURL?.includes('login')) {
+      return Promise.reject(error);
+    }
+    if (error.response?.status === 401 || error.response?.status === 403) {
+      logout();
+    } else {
+      return Promise.reject(error);
+    }
+  }
+);
 export default axiosInstance;

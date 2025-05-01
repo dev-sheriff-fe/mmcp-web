@@ -15,7 +15,9 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { useRouter } from 'next/router';
 import { useTranslation } from 'next-i18next';
 import FileInput from '@/components/ui/file-input';
-
+import { toast } from 'react-toastify';
+import axiosInstance from '@/utils/fetch-function';
+import { useMutation } from 'react-query';
 
 const defaultValues = {
   merchantId: '',
@@ -25,15 +27,11 @@ const defaultValues = {
   email: '',
   mobileNo: '',
   address: '',
-  state: '',
-  settlementType: '',
+
   firstName: '',
   lastName: '',
   bvn: '',
-  gender: '',
   businessName: '',
-  businessType: '',  
-  bank: '',
   settlementAccount: '',
   settlementAccountName: '',
   terminalId: '',
@@ -46,8 +44,9 @@ type IProps = {
 };
 
 const businessTypeOptions = [
-  { id: 'individual', name: 'Individual' },
+  { id: 'Individual', name: 'Individual' },
   { id: 'Corporate', name: 'Corporate' },
+  { id: 'COLLECTION', name: 'Collection' },
 ];
 
 const stateOptions = [
@@ -58,6 +57,7 @@ const stateOptions = [
 const settlementTypeOptions = [
   { id: 'daily', name: 'Daily' },
   { id: 'weekly', name: 'Weekly' },
+  { id: 'BANK_ACCOUNT', name: 'Bank Account' },
 ];
 
 const bankOptions = [
@@ -80,46 +80,99 @@ export default function CreateOrUpdateMerchantForm({ initialValues }: IProps) {
     formState: { errors },
   } = useForm<MerchantInput>({
     shouldUnregister: true,
-    defaultValues: initialValues ?? defaultValues,
+    defaultValues: defaultValues,
   });
-  
+
   const { mutate: createShippingClass, isLoading: creating } =
     useCreateShippingMutation();
   const { mutate: updateShippingClass, isLoading: updating } =
     useUpdateShippingMutation();
+  const { mutate: saveMerchant, isLoading: ismerchantLoading } = useMutation(
+    (formData: any) =>
+      axiosInstance.request({
+        method: 'POST',
+        url: 'merchant/onboard',
+        data: {
+          ...formData,
+          currencyCode: 'NGN',
+          state: 'Lagos',
+          requestReference: new Date().getTime(),
+
+          accountType: 'MERCHWAL',
+          city: 'Lagos',
+          referralCode: '000000',
+          countryCode: 'NG',
+
+          entityCode: 'ETZ',
+          merchantGroupCode: 'M0001',
+          identityLink: 'https://testt',
+          settlementBankCode: '000111',
+          branchCode: 'ETZ_HO',
+        },
+      }),
+    {
+      onSuccess: (data) => {
+        if (data?.data?.code !== '000') {
+          {
+            toast.error(data?.data?.desc);
+            return;
+          }
+        }
+        toast.success('Merchant created successfully');
+        router.back();
+      },
+      onError: (error: any) => {
+        console.log(error);
+
+        if (error?.response?.data) {
+          if (error.response.status === 400) {
+            toast.error('Bad request');
+          } else if (error.response.status === 422) {
+            toast.error(t('common:error-creating-user'));
+          } else if (error.response.status === 500) {
+            toast.error(t('common:error-creating-user'));
+          }
+        } else {
+          toast.error(t('common:error-creating-user'));
+        }
+      },
+    }
+  );
 
   const onSubmit = async (values: MerchantInput) => {
-    console.log('Form submitted with values:', {
-    // Personal Information
-    firstName: values.firstName,
-    lastName: values.lastName,
-    bvn: values.bvn,
-    gender: values.gender,
-    
-    // Merchant Information
-    merchantId: values.merchantId,
-    businessName: values.businessName,
-    businessType: values.businessType,
-    registrationNo: values.registrationNo,
-    
-    // Contact Information
-    email: values.email,
-    mobileNo: values.mobileNo,
-    address: values.address,
-    state: values.state,
-    settlementType: values.settlementType,
-    
-    // Bank Information
-    bank: values.bank,
-    settlementAccount: values.settlementAccount,
-    settlementAccountName: values.settlementAccountName,
-    terminalId: values.terminalId,
-    terminalSerialNo: values.terminalSerialNo,
-    
-    // File
-    businessLogo: values.businessLogo,
-  });
+    const payload = {
+      // Personal Information
+      // firstName: values.firstName,
+      // lastName: values.lastName,
+      bvn: values.bvn,
+      // gender: values?.gender?.id,
 
+      // Merchant Information
+      // merchantId: values.merchantId,
+      businessName: values.businessName,
+      businessType: values?.businessType?.id,
+      // registrationNo: values.registrationNo,
+
+      // Contact Information
+      email: values.email,
+      mobileNo: values.mobileNo,
+      address: values.address,
+      state: values.state?.id,
+      settlementType: values.settlementType?.id,
+
+      // Bank Information
+      settlementBank: values.bank?.id,
+      settlementBankAccount: values.settlementAccount,
+      // settlementAccountName: values.settlementAccountName,
+      // terminalId: values.terminalId,
+      terminalSerialNo: values.terminalSerialNo,
+
+      // File
+      businessLogo: values.businessLogo,
+      username: values.firstName + values.merchantId,
+      password: 'password',
+    };
+    saveMerchant(payload);
   };
 
   const type = useWatch({ name: 'type', control });
@@ -135,33 +188,33 @@ export default function CreateOrUpdateMerchantForm({ initialValues }: IProps) {
         <Card className="w-full sm:w-8/12 md:w-2/3">
           {/* Personal Information */}
           <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
-            <div className="md:col-span-2 pt-5 mt-2">
-              <h3 className="text-lg font-semibold mb-5">
+            <div className="mt-2 pt-5 md:col-span-2">
+              <h3 className="mb-5 text-lg font-semibold">
                 {t('form:section-title-personal-info')}
               </h3>
             </div>
-            
+
             <Input
               label={t('form:input-label-firstname')}
               {...register('firstName')}
               variant="outline"
               className="mb-5"
             />
-            
+
             <Input
               label={t('form:input-label-lastname')}
               {...register('lastName')}
               variant="outline"
               className="mb-5"
             />
-            
+
             <Input
               label={t('form:input-label-bvn')}
               {...register('bvn')}
               variant="outline"
               className="mb-5"
             />
-            
+
             <div className="mb-5">
               <Label>{t('form:input-label-gender')}</Label>
               <SelectInput
@@ -170,33 +223,32 @@ export default function CreateOrUpdateMerchantForm({ initialValues }: IProps) {
                 getOptionLabel={(option: any) => option.name}
                 getOptionValue={(option: any) => option.id}
                 options={genderOptions}
-                
               />
             </div>
           </div>
 
           {/* Merchant Information */}
-          <div className='grid grid-cols-1 gap-5 md:grid-cols-2'>
-            <div className="md:col-span-2 border-t border-gray-200 pt-5 mt-2">
-              <h3 className="text-lg font-semibold mb-5">
+          <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+            <div className="mt-2 border-t border-gray-200 pt-5 md:col-span-2">
+              <h3 className="mb-5 text-lg font-semibold">
                 {t('form:section-title-merchant-info')}
               </h3>
             </div>
-            
+
             <Input
               label={t('form:input-label-merchant-id')}
               {...register('merchantId')}
               variant="outline"
               className="mb-5"
             />
-            
+
             <Input
               label={t('form:input-label-business-name')}
               {...register('businessName')}
               variant="outline"
               className="mb-5"
             />
-            
+
             <div className="mb-5">
               <Label>{t('form:input-label-business-type')}</Label>
               <SelectInput
@@ -207,7 +259,7 @@ export default function CreateOrUpdateMerchantForm({ initialValues }: IProps) {
                 options={businessTypeOptions}
               />
             </div>
-            
+
             <Input
               label={t('form:input-label-registration-no')}
               {...register('registrationNo')}
@@ -215,36 +267,36 @@ export default function CreateOrUpdateMerchantForm({ initialValues }: IProps) {
               className="mb-5"
             />
           </div>
-          
+
           {/* Contact Information */}
-          <div className='grid grid-cols-1 gap-5 md:grid-cols-2'>
-            <div className="md:col-span-2 border-t border-gray-200 pt-5 mt-2">
-              <h3 className="text-lg font-semibold mb-5">
+          <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+            <div className="mt-2 border-t border-gray-200 pt-5 md:col-span-2">
+              <h3 className="mb-5 text-lg font-semibold">
                 {t('form:section-title-contact-details')}
               </h3>
             </div>
-            
+
             <Input
               label={t('form:input-label-email')}
               {...register('email')}
               variant="outline"
               className="mb-5"
             />
-            
+
             <Input
               label={t('form:input-label-mobile-no')}
               {...register('mobileNo')}
               variant="outline"
               className="mb-5"
             />
-            
+
             <Input
               label={t('form:input-label-address')}
               {...register('address')}
               variant="outline"
               className="mb-5"
             />
-            
+
             <div className="mb-5">
               <Label>{t('form:input-label-state')}</Label>
               <SelectInput
@@ -255,7 +307,7 @@ export default function CreateOrUpdateMerchantForm({ initialValues }: IProps) {
                 options={stateOptions}
               />
             </div>
-            
+
             <div className="mb-5">
               <Label>{t('form:input-label-settlement-type')}</Label>
               <SelectInput
@@ -267,11 +319,11 @@ export default function CreateOrUpdateMerchantForm({ initialValues }: IProps) {
               />
             </div>
           </div>
-          
+
           {/* Bank Information */}
-          <div className='grid grid-cols-1 gap-5 md:grid-cols-2'>
-            <div className="md:col-span-2 border-t border-gray-200 pt-5 mt-2">
-              <h3 className="text-lg font-semibold mb-5">
+          <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+            <div className="mt-2 border-t border-gray-200 pt-5 md:col-span-2">
+              <h3 className="mb-5 text-lg font-semibold">
                 {t('form:section-title-bank-info')}
               </h3>
             </div>
@@ -285,14 +337,14 @@ export default function CreateOrUpdateMerchantForm({ initialValues }: IProps) {
                 options={bankOptions}
               />
             </div>
-            
+
             <Input
               label={t('form:input-label-settlement-account')}
               {...register('settlementAccount')}
               variant="outline"
               className="mb-5"
             />
-            
+
             <Input
               label={t('form:input-label-settlement-account-name')}
               {...register('settlementAccountName')}
@@ -306,7 +358,7 @@ export default function CreateOrUpdateMerchantForm({ initialValues }: IProps) {
               variant="outline"
               className="mb-5"
             />
-            
+
             <Input
               label={t('form:input-label-terminal-serial-no')}
               {...register('terminalSerialNo')}
@@ -317,9 +369,12 @@ export default function CreateOrUpdateMerchantForm({ initialValues }: IProps) {
 
           <div className="mb-5">
             <Label>{t('form:input-label-business-logo')}</Label>
-            <FileInput name="marchant.businessLogo" control={control} multiple={false} />
+            <FileInput
+              name="marchant.businessLogo"
+              control={control}
+              multiple={false}
+            />
           </div>
-
         </Card>
       </div>
 

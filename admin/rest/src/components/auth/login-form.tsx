@@ -21,22 +21,19 @@ import axiosInstance from '@/utils/fetch-function';
 import { log } from 'console';
 
 const loginFormSchema = yup.object().shape({
-  email: yup
-    .string()
-    .email('form:error-email-format')
-    .required('form:error-email-required'),
+  email: yup.string().required('form:error-email-required'),
   password: yup.string().required('form:error-password-required'),
 });
 
 const LoginForm = () => {
   const { t } = useTranslation();
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const { mutate: login, isLoading, error } = useLogin();
+
   const loginMutation = useMutation(
-    () =>
+    ({ email, password }: { email: string; password: string }) =>
       axiosInstance.post('/usermanager/weblogin', {
-        username: 'MT83332567',
-        password: '123456',
+        username: email,
+        password: password,
         userlang: 'en',
         deviceId: '000',
         channelType: 'WEB',
@@ -44,33 +41,47 @@ const LoginForm = () => {
     {
       onSuccess: (data) => {
         localStorage.setItem('token', data.data.ticketID);
+        localStorage.setItem('user', JSON.stringify(data.data));
+        if (data?.data?.ticketID) {
+          if (hasAccess(allowedRoles, ['store_owner', 'super_admin'])) {
+            setAuthCredentials(data?.data.ticketID, [
+              'store_owner',
+              'super_admin',
+            ]);
+            Router.push(Routes.dashboard);
+            return;
+          }
+          setErrorMessage('form:error-enough-permission');
+        } else {
+          setErrorMessage('form:error-credential-wrong');
+        }
       },
     }
   );
 
   function onSubmit({ email, password }: LoginInput) {
-    login(
-      {
-        email,
-        password,
-      },
-      {
-        onSuccess: (data) => {
-          if (data?.token) {
-            if (hasAccess(allowedRoles, data?.permissions)) {
-              setAuthCredentials(data?.token, data?.permissions);
-              Router.push(Routes.dashboard);
-              return;
-            }
-            setErrorMessage('form:error-enough-permission');
-          } else {
-            setErrorMessage('form:error-credential-wrong');
-          }
-        },
-        onError: () => {},
-      }
-    );
-    loginMutation.mutate();
+    // login(
+    //   {
+    //     email,
+    //     password,
+    //   },
+    //   {
+    //     onSuccess: (data) => {
+    //       if (data?.token) {
+    //         if (hasAccess(allowedRoles, data?.permissions)) {
+    //           setAuthCredentials(data?.token, data?.permissions);
+    //           Router.push(Routes.dashboard);
+    //           return;
+    //         }
+    //         setErrorMessage('form:error-enough-permission');
+    //       } else {
+    //         setErrorMessage('form:error-credential-wrong');
+    //       }
+    //     },
+    //     onError: () => {},
+    //   }
+    // );
+    loginMutation.mutate({ email, password });
   }
 
   return (
@@ -81,7 +92,7 @@ const LoginForm = () => {
             <Input
               label={t('form:input-label-email')}
               {...register('email')}
-              type="email"
+              type="text"
               variant="outline"
               className="mb-4"
               error={t(errors?.email?.message!)}
@@ -95,7 +106,11 @@ const LoginForm = () => {
               className="mb-4"
               forgotPageLink={Routes.forgotPassword}
             />
-            <Button className="w-full" loading={isLoading} disabled={isLoading}>
+            <Button
+              className="w-full"
+              loading={loginMutation.isLoading}
+              disabled={loginMutation.isLoading}
+            >
               {t('form:button-label-login')}
             </Button>
 
