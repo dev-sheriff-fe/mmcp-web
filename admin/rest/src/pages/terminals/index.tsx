@@ -44,6 +44,8 @@ export default function TerminalsPage() {
         params: {
           pageNumber: page,
           pageSize: 20,
+          name: searchTerm,
+          entityCode: 'ETZ',
         },
       }),
     {}
