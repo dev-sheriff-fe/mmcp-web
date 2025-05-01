@@ -113,10 +113,8 @@ export default function CreateOrUpdateMerchantForm({ initialValues }: IProps) {
     {
       onSuccess: (data) => {
         if (data?.data?.code !== '000') {
-          {
-            toast.error(data?.data?.desc);
-            return;
-          }
+          toast.error(data?.data?.desc);
+          return;
         }
         toast.success('Merchant created successfully');
         router.back();
@@ -179,204 +177,204 @@ export default function CreateOrUpdateMerchantForm({ initialValues }: IProps) {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <div className="my-5 flex flex-wrap sm:my-8">
+      {/* <div className="my-5 flex flex-wrap sm:my-8">
         <Description
           title={t('form:item-description')}
           details={t('form:merchant-form-info-help-text')}
           className="w-full px-0 pb-5 sm:w-4/12 sm:py-8 sm:pe-4 md:w-1/3 md:pe-5"
-        />
-        <Card className="w-full sm:w-8/12 md:w-2/3">
-          {/* Personal Information */}
-          <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
-            <div className="mt-2 pt-5 md:col-span-2">
-              <h3 className="mb-5 text-lg font-semibold">
-                {t('form:section-title-personal-info')}
-              </h3>
-            </div>
-
-            <Input
-              label={t('form:input-label-firstname')}
-              {...register('firstName')}
-              variant="outline"
-              className="mb-5"
-            />
-
-            <Input
-              label={t('form:input-label-lastname')}
-              {...register('lastName')}
-              variant="outline"
-              className="mb-5"
-            />
-
-            <Input
-              label={t('form:input-label-bvn')}
-              {...register('bvn')}
-              variant="outline"
-              className="mb-5"
-            />
-
-            <div className="mb-5">
-              <Label>{t('form:input-label-gender')}</Label>
-              <SelectInput
-                name="gender"
-                control={control}
-                getOptionLabel={(option: any) => option.name}
-                getOptionValue={(option: any) => option.id}
-                options={genderOptions}
-              />
-            </div>
+        /> */}
+      <Card className="w-full sm:w-8/12 md:w-2/3">
+        {/* Personal Information */}
+        <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+          <div className="mt-2 pt-5 md:col-span-2">
+            <h3 className="mb-5 text-lg font-semibold">
+              {t('form:section-title-personal-info')}
+            </h3>
           </div>
 
-          {/* Merchant Information */}
-          <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
-            <div className="mt-2 border-t border-gray-200 pt-5 md:col-span-2">
-              <h3 className="mb-5 text-lg font-semibold">
-                {t('form:section-title-merchant-info')}
-              </h3>
-            </div>
+          <Input
+            label={t('form:input-label-firstname')}
+            {...register('firstName')}
+            variant="outline"
+            className="mb-5"
+          />
 
-            <Input
-              label={t('form:input-label-merchant-id')}
-              {...register('merchantId')}
-              variant="outline"
-              className="mb-5"
+          <Input
+            label={t('form:input-label-lastname')}
+            {...register('lastName')}
+            variant="outline"
+            className="mb-5"
+          />
+
+          <Input
+            label={t('form:input-label-bvn')}
+            {...register('bvn')}
+            variant="outline"
+            className="mb-5"
+          />
+
+          <div className="mb-5">
+            <Label>{t('form:input-label-gender')}</Label>
+            <SelectInput
+              name="gender"
+              control={control}
+              getOptionLabel={(option: any) => option.name}
+              getOptionValue={(option: any) => option.id}
+              options={genderOptions}
             />
+          </div>
+        </div>
 
-            <Input
-              label={t('form:input-label-business-name')}
-              {...register('businessName')}
-              variant="outline"
-              className="mb-5"
-            />
+        {/* Merchant Information */}
+        <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+          <div className="mt-2 border-t border-gray-200 pt-5 md:col-span-2">
+            <h3 className="mb-5 text-lg font-semibold">
+              {t('form:section-title-merchant-info')}
+            </h3>
+          </div>
 
-            <div className="mb-5">
-              <Label>{t('form:input-label-business-type')}</Label>
-              <SelectInput
-                name="businessType"
-                control={control}
-                getOptionLabel={(option: any) => option.name}
-                getOptionValue={(option: any) => option.id}
-                options={businessTypeOptions}
-              />
-            </div>
+          <Input
+            label={t('form:input-label-merchant-id')}
+            {...register('merchantId')}
+            variant="outline"
+            className="mb-5"
+          />
 
-            <Input
-              label={t('form:input-label-registration-no')}
-              {...register('registrationNo')}
-              variant="outline"
-              className="mb-5"
+          <Input
+            label={t('form:input-label-business-name')}
+            {...register('businessName')}
+            variant="outline"
+            className="mb-5"
+          />
+
+          <div className="mb-5">
+            <Label>{t('form:input-label-business-type')}</Label>
+            <SelectInput
+              name="businessType"
+              control={control}
+              getOptionLabel={(option: any) => option.name}
+              getOptionValue={(option: any) => option.id}
+              options={businessTypeOptions}
             />
           </div>
 
-          {/* Contact Information */}
-          <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
-            <div className="mt-2 border-t border-gray-200 pt-5 md:col-span-2">
-              <h3 className="mb-5 text-lg font-semibold">
-                {t('form:section-title-contact-details')}
-              </h3>
-            </div>
+          <Input
+            label={t('form:input-label-registration-no')}
+            {...register('registrationNo')}
+            variant="outline"
+            className="mb-5"
+          />
+        </div>
 
-            <Input
-              label={t('form:input-label-email')}
-              {...register('email')}
-              variant="outline"
-              className="mb-5"
-            />
-
-            <Input
-              label={t('form:input-label-mobile-no')}
-              {...register('mobileNo')}
-              variant="outline"
-              className="mb-5"
-            />
-
-            <Input
-              label={t('form:input-label-address')}
-              {...register('address')}
-              variant="outline"
-              className="mb-5"
-            />
-
-            <div className="mb-5">
-              <Label>{t('form:input-label-state')}</Label>
-              <SelectInput
-                name="state"
-                control={control}
-                getOptionLabel={(option: any) => option.name}
-                getOptionValue={(option: any) => option.id}
-                options={stateOptions}
-              />
-            </div>
-
-            <div className="mb-5">
-              <Label>{t('form:input-label-settlement-type')}</Label>
-              <SelectInput
-                name="settlementType"
-                control={control}
-                getOptionLabel={(option: any) => option.name}
-                getOptionValue={(option: any) => option.id}
-                options={settlementTypeOptions}
-              />
-            </div>
+        {/* Contact Information */}
+        <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+          <div className="mt-2 border-t border-gray-200 pt-5 md:col-span-2">
+            <h3 className="mb-5 text-lg font-semibold">
+              {t('form:section-title-contact-details')}
+            </h3>
           </div>
 
-          {/* Bank Information */}
-          <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
-            <div className="mt-2 border-t border-gray-200 pt-5 md:col-span-2">
-              <h3 className="mb-5 text-lg font-semibold">
-                {t('form:section-title-bank-info')}
-              </h3>
-            </div>
-            <div className="mb-5">
-              <Label>{t('form:input-label-bank')}</Label>
-              <SelectInput
-                name="bank"
-                control={control}
-                getOptionLabel={(option: any) => option.name}
-                getOptionValue={(option: any) => option.id}
-                options={bankOptions}
-              />
-            </div>
+          <Input
+            label={t('form:input-label-email')}
+            {...register('email')}
+            variant="outline"
+            className="mb-5"
+          />
 
-            <Input
-              label={t('form:input-label-settlement-account')}
-              {...register('settlementAccount')}
-              variant="outline"
-              className="mb-5"
-            />
+          <Input
+            label={t('form:input-label-mobile-no')}
+            {...register('mobileNo')}
+            variant="outline"
+            className="mb-5"
+          />
 
-            <Input
-              label={t('form:input-label-settlement-account-name')}
-              {...register('settlementAccountName')}
-              variant="outline"
-              className="mb-5"
-            />
+          <Input
+            label={t('form:input-label-address')}
+            {...register('address')}
+            variant="outline"
+            className="mb-5"
+          />
 
-            <Input
-              label={t('form:input-label-terminal-id')}
-              {...register('terminalId')}
-              variant="outline"
-              className="mb-5"
-            />
-
-            <Input
-              label={t('form:input-label-terminal-serial-no')}
-              {...register('terminalSerialNo')}
-              variant="outline"
-              className="mb-5"
+          <div className="mb-5">
+            <Label>{t('form:input-label-state')}</Label>
+            <SelectInput
+              name="state"
+              control={control}
+              getOptionLabel={(option: any) => option.name}
+              getOptionValue={(option: any) => option.id}
+              options={stateOptions}
             />
           </div>
 
           <div className="mb-5">
-            <Label>{t('form:input-label-business-logo')}</Label>
-            <FileInput
-              name="marchant.businessLogo"
+            <Label>{t('form:input-label-settlement-type')}</Label>
+            <SelectInput
+              name="settlementType"
               control={control}
-              multiple={false}
+              getOptionLabel={(option: any) => option.name}
+              getOptionValue={(option: any) => option.id}
+              options={settlementTypeOptions}
             />
           </div>
-        </Card>
-      </div>
+        </div>
+
+        {/* Bank Information */}
+        <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+          <div className="mt-2 border-t border-gray-200 pt-5 md:col-span-2">
+            <h3 className="mb-5 text-lg font-semibold">
+              {t('form:section-title-bank-info')}
+            </h3>
+          </div>
+          <div className="mb-5">
+            <Label>{t('form:input-label-bank')}</Label>
+            <SelectInput
+              name="bank"
+              control={control}
+              getOptionLabel={(option: any) => option.name}
+              getOptionValue={(option: any) => option.id}
+              options={bankOptions}
+            />
+          </div>
+
+          <Input
+            label={t('form:input-label-settlement-account')}
+            {...register('settlementAccount')}
+            variant="outline"
+            className="mb-5"
+          />
+
+          <Input
+            label={t('form:input-label-settlement-account-name')}
+            {...register('settlementAccountName')}
+            variant="outline"
+            className="mb-5"
+          />
+
+          <Input
+            label={t('form:input-label-terminal-id')}
+            {...register('terminalId')}
+            variant="outline"
+            className="mb-5"
+          />
+
+          <Input
+            label={t('form:input-label-terminal-serial-no')}
+            {...register('terminalSerialNo')}
+            variant="outline"
+            className="mb-5"
+          />
+        </div>
+
+        <div className="mb-5">
+          <Label>{t('form:input-label-business-logo')}</Label>
+          <FileInput
+            name="marchant.businessLogo"
+            control={control}
+            multiple={false}
+          />
+        </div>
+      </Card>
+      {/* </div> */}
 
       <div className="mb-4 text-end">
         {initialValues && (

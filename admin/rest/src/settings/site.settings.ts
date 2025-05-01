@@ -5,9 +5,9 @@ export const siteSettings = {
   name: 'PickBazar',
   description: '',
   logo: {
-    url: '/logo.svg',
+    url: '/pos.png',
     // url: '/pos.png',
-    alt: 'PickBazar',
+    alt: 'MMCP',
     href: '/',
     width: 40,
     height: 40,

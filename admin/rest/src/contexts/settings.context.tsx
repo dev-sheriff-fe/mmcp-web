@@ -4,13 +4,13 @@ export interface State {
 }
 
 const initialState = {
-  siteTitle: 'PickBazar',
+  siteTitle: 'MMCP',
   siteSubtitle: '',
-  currency: 'USD',
+  currency: 'NAIRA',
   logo: {
     id: 1,
-    thumbnail: '/logo.svg',
-    original: '/logo.svg',
+    thumbnail: '/pos.png',
+    original: '/pos.png',
   },
 };
 

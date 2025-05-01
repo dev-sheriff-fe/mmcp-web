@@ -34,12 +34,12 @@ const Navbar = () => {
           <NavbarIcon />
         </motion.button>
 
-        <div className="ms-5 me-auto hidden md:flex">
+        <div className="hidden ms-5 me-auto md:flex">
           <Logo />
         </div>
 
-        <div className="space-s-8 flex items-center">
-          {hasAccess(adminAndOwnerOnly, permissions) && (
+        <div className="flex items-center space-s-8">
+          {/* {hasAccess(adminAndOwnerOnly, permissions) && (
             <LinkButton
               href={Routes.shop.create}
               className="ms-4 md:ms-6"
@@ -47,7 +47,7 @@ const Navbar = () => {
             >
               {t('common:text-create-shop')}
             </LinkButton>
-          )}
+          )} */}
           {enableMultiLang ? <LanguageSwitcher /> : null}
           <AuthorizedMenu />
         </div>
