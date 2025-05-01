@@ -89,7 +89,37 @@ export default function CreateOrUpdateMerchantForm({ initialValues }: IProps) {
     useUpdateShippingMutation();
 
   const onSubmit = async (values: MerchantInput) => {
-    // Handle form submission
+    console.log('Form submitted with values:', {
+    // Personal Information
+    firstName: values.firstName,
+    lastName: values.lastName,
+    bvn: values.bvn,
+    gender: values.gender,
+    
+    // Merchant Information
+    merchantId: values.merchantId,
+    businessName: values.businessName,
+    businessType: values.businessType,
+    registrationNo: values.registrationNo,
+    
+    // Contact Information
+    email: values.email,
+    mobileNo: values.mobileNo,
+    address: values.address,
+    state: values.state,
+    settlementType: values.settlementType,
+    
+    // Bank Information
+    bank: values.bank,
+    settlementAccount: values.settlementAccount,
+    settlementAccountName: values.settlementAccountName,
+    terminalId: values.terminalId,
+    terminalSerialNo: values.terminalSerialNo,
+    
+    // File
+    businessLogo: values.businessLogo,
+  });
+
   };
 
   const type = useWatch({ name: 'type', control });

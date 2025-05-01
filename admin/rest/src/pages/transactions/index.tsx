@@ -17,6 +17,8 @@ import cn from 'classnames';
 import { ArrowDown } from '@/components/icons/arrow-down';
 import { ArrowUp } from '@/components/icons/arrow-up';
 import { useShippingClassesQuery } from '@/data/merchant';
+import axiosInstance from '@/utils/fetch-function';
+import { useQuery } from 'react-query';
 
 export default function TransactionsPage() {
   const { t } = useTranslation();
@@ -37,26 +39,61 @@ export default function TransactionsPage() {
   const [merchantCode, setMerchantCode] = useState<string>('');
   const [name, setName] = useState<string>('');
   const [terminalId, setTerminalId] = useState<string>('');
-
-
+  const getFirstDayOfYear = () => {
+    const year = new Date().getFullYear();
+    return `01-01-${year}`;
+  };
   
-  const { merchantClasses: transactions, loading, error } = useShippingClassesQuery({
-    name: searchTerm,
-    orderBy,
-    sortedBy,
-    language: locale,
-    limit: 20,
-    page,
-    // type,
-    // categories: category,
-    transactionType,
-    status,
-    startDate: startDate?.toISOString(),
-    endDate: endDate?.toISOString(),
-    rrn,
-    merchantCode,
-    terminalId,
-  });
+  const formatDate = (date: Date) => {
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}-${month}-${year}`;
+  };
+  
+  const today = formatDate(new Date());
+  const firstDayOfYear = getFirstDayOfYear();
+  
+  const { error, data, isLoading } = useQuery(
+    ['transactions', page, searchTerm, transactionType, status, startDate, endDate, rrn, merchantCode, name, terminalId],
+    () =>
+      axiosInstance.request({
+        method: 'GET',
+        url: 'transactionmanager/tranmasterlist',
+        params: {
+          startDate: startDate ? formatDate(startDate) : firstDayOfYear,
+          endDate: endDate ? formatDate(endDate) : today,
+          pageNumber: page,
+          pageSize: 100,
+          searchFilter: searchTerm,
+          rrn: rrn || undefined,
+          terminalId: terminalId || undefined,
+          status: status || undefined,
+          tranCode: transactionType || undefined,
+          name: name || undefined,
+          merchantCode: merchantCode || undefined,
+        },
+      }),
+    {
+      keepPreviousData: true,
+    }
+  );
+
+  const newPaginatorInfo = {
+    currentPage: page,
+    firstPageUrl: '',
+    from: 1,
+    lastPage: data?.data?.totalPages,
+    lastPageUrl: '',
+    links: [],
+    nextPageUrl: null,
+    path: '',
+    perPage: 20,
+    prevPageUrl: null,
+    to: 10,
+    total: data?.data?.totalCount,
+    hasMorePages: data?.data?.totalPages > page,
+  };
 
   const toggleVisible = () => {
     setVisible((v) => !v);
@@ -64,14 +101,15 @@ export default function TransactionsPage() {
 
   function handleSearch({ searchText }: { searchText: string }) {
     setSearchTerm(searchText);
+    setPage(1);
   }
 
   function handlePagination(current: number) {
     setPage(current);
   }
 
-  if (loading) return <Loader text={t('common:text-loading')} />;
-  if (error) return <ErrorMessage message={error.message} />;
+  if (isLoading) return <Loader text={t('common:text-loading')} />;
+  if (error) return <ErrorMessage message={(error as any)?.message || t('common:text-error')} />;
 
   const handleTransactionTypeFilter = (selectedOption: any) => {
     setPage(1);
@@ -156,15 +194,13 @@ export default function TransactionsPage() {
             onMerchantCodeFilter={handleMerchantCodeFilter}
             onNameFilter={handleNameFilter}
             onTerminalIdFilter={handleTerminalIdFilter}
-            // onCategoryFilter={(selectedOption: any) => setCategory(selectedOption?.value || '')}
-            // onTypeFilter={(selectedOption: any) => setType(selectedOption?.value || '')}
           />
           </div>
         </div>
       </Card>
 
       <TransactionList
-        merchants={transactions}
+        merchants={data?.data?.transactions ?? []}
         onOrder={setOrder}
         onSort={setColumn}
       />

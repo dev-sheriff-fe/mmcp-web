@@ -6,9 +6,10 @@ export const siteSettings = {
   description: '',
   logo: {
     url: '/logo.svg',
+    // url: '/pos.png',
     alt: 'PickBazar',
     href: '/',
-    width: 128,
+    width: 40,
     height: 40,
   },
   defaultLanguage: 'en',

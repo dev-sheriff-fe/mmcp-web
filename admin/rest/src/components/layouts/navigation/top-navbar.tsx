@@ -1,4 +1,4 @@
-import Logo from '@/components/ui/logo';
+import Logo from '@/components/ui/new-logo';
 import { useUI } from '@/contexts/ui.context';
 import AuthorizedMenu from './authorized-menu';
 import LinkButton from '@/components/ui/link-button';

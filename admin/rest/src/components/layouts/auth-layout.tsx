@@ -1,5 +1,5 @@
 import { useRouter } from 'next/router';
-import Logo from '@/components/ui/logo';
+import Logo from '@/components/ui/new-logo';
 import React from 'react';
 
 export default function AuthPageLayout({
