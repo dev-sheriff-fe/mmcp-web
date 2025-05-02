@@ -24,7 +24,9 @@ const BillerView = () => {
   const { closeModal } = useModalAction();
   const locale = router.locale;
   
+  const [searchTerm, setSearch] = useState('');
 
+  const [page, setPage] = useState(1);
   const [orderBy, setOrder] = useState('created_at');
   const [sortedBy, setColumn] = useState<SortOrder>(SortOrder.Desc);
   const [activeTab, setActiveTab] = useState<'products' | 'paymentData'>('products');
@@ -45,17 +47,60 @@ const BillerView = () => {
     }
   );
 
-    const {
-      merchantClasses: billerProducts,
-      merchantClasses: billerCollections,
-      loading,
-      error,
-    } = useShippingClassesQuery({
-      orderBy,
-      sortedBy,
-      language: locale,
-      limit: 20,
-    });
+  // const { data, isLoading } = useQuery(
+  //   'billers',
+  //   () =>
+  //     axiosInstance.request({
+  //       method: 'GET',
+  //       url: 'mbillcollection/getBillersList',
+  //       params: {
+  //         pageNumber: page,
+  //         pageSize: 20,
+  //         billerCode: billerData?.billerCode,
+  //       },
+  //     }),
+  //   {}
+  // );
+  const { data, isLoading } = useQuery(
+    ['biller', billerData?.billerCode], 
+    () =>
+      axiosInstance.request({
+        method: 'GET',
+        url: 'mbillcollection/getBillersList', 
+        params: {
+          billerCode: billerData?.billerCode,
+        },
+      }),
+    {
+      enabled: !!billerData?.billerCode,
+    }
+  );
+
+  const billerDetails = data?.data;
+
+  const newPaginatorInfo = {
+    currentPage: page,
+    firstPageUrl: '',
+    from: 1,
+    lastPage: data?.data?.totalPages,
+    lastPageUrl: '',
+    links: [],
+    nextPageUrl: null,
+    path: '',
+    perPage: 20,
+    prevPageUrl: null,
+    to: 10,
+    total: data?.data?.totalCount,
+    hasMorePages: data?.data?.totalPages > page,
+  };
+  const { merchantClasses:billerProducts,merchantClasses:billerCollections, loading, error } = useShippingClassesQuery({
+    name: searchTerm,
+    orderBy,
+    sortedBy,
+    language: locale,
+    limit: 20,
+  });
+
 
   return (
     <div className="m-auto w-[1000px] rounded bg-light px-4">
@@ -86,7 +131,7 @@ const BillerView = () => {
               <BillerProductList
                 onOrder={setOrder}
                 onSort={setColumn}
-                merchants={billerProducts}
+                products={billerProducts}
               />
             </div>
           )}
@@ -102,7 +147,7 @@ const BillerView = () => {
               <BillerCollectionList
                 onOrder={setOrder}
                 onSort={setColumn}
-                merchants={billerCollections}
+                collections={billerCollections}
               />
             </div>
           )}

@@ -8,12 +8,12 @@ import { useState } from 'react';
 import TitleWithSort from '@/components/ui/title-with-sort';
 
 export type IProps = {
-  merchants: Merchant[] | undefined;
+  collections: Merchant[] | undefined;
   onSort: (current: any) => void;
   onOrder: (current: string) => void;
 };
 
-const BillerCollectionList = ({ merchants, onSort, onOrder }: IProps) => {
+const BillerCollectionList = ({ collections, onSort, onOrder }: IProps) => {
   const { t } = useTranslation();
   const { alignLeft } = useIsRTL();
 
@@ -106,7 +106,7 @@ const BillerCollectionList = ({ merchants, onSort, onOrder }: IProps) => {
         //@ts-ignore
         columns={columns}
         emptyText={t('table:empty-table-data')}
-        data={merchants}
+        data={collections}
         rowKey="id"
         scroll={{ x: 900 }}
       />

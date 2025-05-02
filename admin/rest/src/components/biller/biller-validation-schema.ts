@@ -9,7 +9,7 @@ export const billerValidationSchema = yup.object().shape({
   billerCategoryCode: yup.string().required('Biller category code is required'),
   billerCategory: yup.string().required('Biller category is required'),
   logoURL: yup.string().url('Must be a valid URL').required('Logo URL is required'),
-  status: yup.string().required('Status is required'),
+  status: yup.object().required('Status is required'),
   billerRef: yup.string().required('Biller reference is required'),
   countryCode: yup.string().required('Country code is required'),
   serviceProvider: yup.string().required('Service provider is required'),
@@ -21,18 +21,18 @@ export const billerValidationSchema = yup.object().shape({
       productName: yup.string().required('Product name is required'),
       productDesc: yup.string().required('Product description is required'),
       amount: yup.number().required('Amount is required').min(0),
-      amountType: yup.string().required('Amount type is required'),
-      status: yup.string().required('Status is required'),
+      amountType: yup.object().required('Amount type is required'),
+      status: yup.object().required('Status is required'),
     })
   ),
   paymentData: yup.array().of(
     yup.object().shape({
       fieldID: yup.string().required('Field ID is required'),
       fieldName: yup.string().required('Field name is required'),
-      fieldDataType: yup.string().required('Field data type is required'),
+      fieldDataType: yup.object().required('Field data type is required'),
       maxLength: yup.number().required('Max length is required').min(1),
-      mandatoryFlag: yup.string().required('Mandatory flag is required'),
-      inputOrOutput: yup.string().required('Input/Output is required'),
+      mandatoryFlag: yup.object().required('Mandatory flag is required'),
+      inputOrOutput: yup.object().required('Input/Output is required'),
     })
   ),
 });

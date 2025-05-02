@@ -110,6 +110,15 @@ export default function TerminalsPage() {
               <span>{t('form:button-label-link-terminal')}</span>
             </button>
 
+            <LinkButton
+              href={`${Routes.terminal.create}`}
+              className="h-12 w-full md:w-auto md:ms-6"
+            >
+              <span>
+                + {t('form:button-label-add')} {t('form:button-label-terminal')}
+              </span>
+            </LinkButton>
+
             <button
               className="flex items-center whitespace-nowrap text-base font-semibold text-accent md:ms-5"
               onClick={toggleVisible}
@@ -142,7 +151,7 @@ export default function TerminalsPage() {
       <TerminalList
         onOrder={setOrder}
         onSort={setColumn}
-        merchants={terminals}
+        terminals={terminals}
       />
 
       {/* Link Terminal Modal */}

@@ -1,5 +1,5 @@
 import Layout from '@/components/layouts/admin';
-import CreateOrUpdateMerchantForm from '@/components/merchant/merchant-form';
+import CreateTerminalForm from '@/components/terminal/terminal-form';
 import { useTranslation } from 'next-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 
@@ -9,10 +9,10 @@ export default function CreateMerchantPage() {
     <>
       <div className="flex border-b border-dashed border-border-base py-5 sm:py-8">
         <h1 className="text-lg font-semibold text-heading">
-          {t('form:form-title-create-merchant')}
+          {t('form:form-title-add-terminal')}
         </h1>
       </div>
-      <CreateOrUpdateMerchantForm />
+      <CreateTerminalForm />
     </>
   );
 }

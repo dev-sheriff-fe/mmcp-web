@@ -34,11 +34,11 @@ export default function BillersPage() {
   const [name, setName] = useState<string>('');
   const [code, setCode] = useState<string>('');
   const { data, isLoading } = useQuery(
-    'merchantsS',
+    'billers',
     () =>
       axiosInstance.request({
         method: 'GET',
-        url: '/merchant/all',
+        url: 'mbillcollection/getBillersList',
         params: {
           pageNumber: page,
           pageSize: 20,
@@ -151,7 +151,7 @@ export default function BillersPage() {
       <BillerList
         onOrder={setOrder}
         onSort={setColumn}
-        merchants={data?.data?.content ?? merchantClasses}
+        merchants={data?.data?.billers ?? merchantClasses}
       />
     </>
   );

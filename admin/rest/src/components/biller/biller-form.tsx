@@ -13,6 +13,33 @@ import { useRouter } from 'next/router';
 import TextArea from '@/components/ui/text-area';
 import SelectInput from '@/components/ui/select-input';
 import Label from '@/components/ui/label';
+import { useEffect } from 'react';
+
+
+type SelectOption = {
+  id: string;
+  name: string;
+  description?: string;
+};
+
+type Product = {
+  productCode: string;
+  productDesc: string;
+  productName: string;
+  amount: number;
+  amountType: string;
+  status: string;
+};
+
+type PaymentField = {
+  fieldID: string;
+  fieldDataType: string;
+  fieldName: string;
+  fieldValue: string;
+  maxLength: number;
+  mandatoryFlag: string;
+  inputOrOutput: string;
+};
 
 type FormValues = {
   billerCode: string;
@@ -29,26 +56,24 @@ type FormValues = {
   serviceProvider: string;
   minAmount: number;
   maxAmount: number;
-  products: Array<{
-    productCode: string;
-    productDesc: string;
-    productName: string;
-    amount: number;
-    amountType: string;
-    status: string;
+  products: Product[];
+  paymentData: PaymentField[];
+};
+
+type FormValuesWithSelectObjects = Omit<FormValues, 'status' | 'products' | 'paymentData'> & {
+  status: SelectOption | null;
+  products: Array<Omit<Product, 'amountType' | 'status'> & {
+    amountType: SelectOption | null;
+    status: SelectOption | null;
   }>;
-  paymentData: Array<{
-    fieldID: string;
-    fieldDataType: string;
-    fieldName: string;
-    fieldValue: string;
-    maxLength: number;
-    mandatoryFlag: string;
-    inputOrOutput: string;
+  paymentData: Array<Omit<PaymentField, 'fieldDataType' | 'mandatoryFlag' | 'inputOrOutput'> & {
+    fieldDataType: SelectOption | null;
+    mandatoryFlag: SelectOption | null;
+    inputOrOutput: SelectOption | null;
   }>;
 };
 
-const defaultValues = {
+const defaultValues: FormValuesWithSelectObjects = {
   billerCode: '',
   billerName: '',
   bankName: '',
@@ -57,7 +82,7 @@ const defaultValues = {
   billerCategoryCode: '',
   billerCategory: '',
   logoURL: '',
-  status: 'Active',
+  status: null,
   billerRef: '',
   countryCode: 'NG',
   serviceProvider: '',
@@ -69,46 +94,45 @@ const defaultValues = {
       productDesc: '',
       productName: '',
       amount: 0,
-      amountType: 'FIXED',
-      status: 'Active',
+      amountType: null,
+      status: null,
     },
   ],
   paymentData: [
     {
       fieldID: '',
-      fieldDataType: 'STRING',
       fieldName: '',
       fieldValue: '',
       maxLength: 0,
-      mandatoryFlag: 'Y',
-      inputOrOutput: 'I',
+      fieldDataType: null,
+      mandatoryFlag: null,
+      inputOrOutput: null,
     },
   ],
 };
 
-const amountOptions = [
+const amountOptions: SelectOption[] = [
   { id: 'fixed', name: 'FIXED' },
   { id: 'variable', name: 'VARIABLE' }, 
 ];
 
-const datatypeOptions = [
+const datatypeOptions: SelectOption[] = [
   { id: 'STRING', name: 'String' },
   { id: 'NUMBER', name: 'Number' },
   { id: 'DATE', name: 'Date' },
 ];
 
-const inputOrOutputOptions = [
+const inputOrOutputOptions: SelectOption[] = [
   { id: 'I', name: 'Input' },
   { id: 'O', name: 'Output' },
 ];
 
-const mandatoryFlagOptions = [
+const mandatoryFlagOptions: SelectOption[] = [
   { id: 'Y', name: 'Yes' },
   { id: 'N', name: 'No' },
 ];
 
 const BillerCreateForm = () => {
-
   const { data: statusData } = useQuery(
     'status',
     () =>
@@ -124,7 +148,23 @@ const BillerCreateForm = () => {
         })),
     }
   );
-  
+
+  const { data: ProductStatusData } = useQuery(
+    'productStatus',
+    () =>
+      axiosInstance.get(
+        'lookupdata/getdatabycategorycode/STATUS?entityCode=ETZ'
+      ),
+    {
+      select: (data) =>
+        data.data.map((item: any) => ({
+          id: item.lookupCode,
+          name: item.lookupName,
+          description: item.lookupDesc,
+        })),
+    }
+  );
+
   const { t } = useTranslation();
   const router = useRouter();
 
@@ -134,17 +174,31 @@ const BillerCreateForm = () => {
     setError,
     control,
     formState: { errors },
-  } = useForm<FormValues>({
+  } = useForm<FormValuesWithSelectObjects>({
     defaultValues,
     resolver: yupResolver(billerValidationSchema),
   });
+
+  useEffect(() => {
+    console.log('Form errors:', errors);
+  }, [errors]);
 
   const { mutate: createBiller, isLoading: saving } = useMutation(
     (formData: FormValues) =>
       axiosInstance.request({
         method: 'POST',
         url: 'billpayment/createBiller',
-        data: formData,
+        data: {
+          ...formData,
+          countryCode: 'NG',
+          state: 'Lagos',
+          businessRegion: 'Lagos',
+          bvn: '00000011101',
+          userlang: 'en',
+          deviceId: '0001',
+          channelType: 'POS',
+          entityCode: 'ETZ',
+        },
       }),
     {
       onSuccess: (data) => {
@@ -165,7 +219,7 @@ const BillerCreateForm = () => {
             toast.error(t('common:error-creating-biller'));
           }
           Object.keys(error.response.data).forEach((field: any) => {
-            setError(field, {
+            setError(field as any, {
               type: 'manual',
               message: error.response.data[field][0],
             });
@@ -177,8 +231,23 @@ const BillerCreateForm = () => {
     }
   );
 
-  const onSubmit = (values: FormValues) => {
-    createBiller(values);
+  const onSubmit = (values: FormValuesWithSelectObjects) => {
+    const payload: FormValues = {
+      ...values,
+      status: values.status?.id || '',
+      products: values.products.map((product) => ({
+        ...product,
+        amountType: product.amountType?.id || '',
+        status: product.status?.id || '',
+      })),
+      paymentData: values.paymentData.map((data) => ({
+        ...data,
+        fieldDataType: data.fieldDataType?.id || '',
+        mandatoryFlag: data.mandatoryFlag?.id || '',
+        inputOrOutput: data.inputOrOutput?.id || '',
+      })),
+    };
+    createBiller(payload);
   };
 
   return (
@@ -271,6 +340,11 @@ const BillerCreateForm = () => {
                 options={statusData || []}
                 isLoading={!statusData}
               />
+              {/* {errors.status?.message && (
+                <p className="mt-1 text-xs text-red-500">
+                  {t(errors.status.message)}
+                </p>
+              )} */}
             </div>
 
             <Input
@@ -350,17 +424,27 @@ const BillerCreateForm = () => {
                     getOptionValue={(option: any) => option.id}
                     options={amountOptions}
                   />
+                  {/* {errors.products?.[0]?.amountType?.message && (
+                    <p className="mt-1 text-xs text-red-500">
+                      {t(errors.products[0].amountType.message)}
+                    </p>
+                  )} */}
                 </div>
                 <div className="mb-5">
                   <Label>{t('form:input-label-status')}</Label>
                   <SelectInput
-                    name="status"
+                    name="products.0.status"
                     control={control}
                     getOptionLabel={(option: any) => option.name}
                     getOptionValue={(option: any) => option.id}
-                    options={statusData || []}
-                    isLoading={!statusData}
+                    options={ProductStatusData || []}
+                    isLoading={!ProductStatusData}
                   />
+                  {/* {errors.products?.[0]?.status?.message && (
+                    <p className="mt-1 text-xs text-red-500">
+                      {t(errors.products[0].status.message)}
+                    </p>
+                  )} */}
                 </div>
               </div>
             </div>
@@ -393,6 +477,11 @@ const BillerCreateForm = () => {
                     getOptionValue={(option: any) => option.id}
                     options={datatypeOptions}
                   />
+                  {/* {errors.paymentData?.[0]?.fieldDataType?.message && (
+                    <p className="mt-1 text-xs text-red-500">
+                      {t(errors.paymentData[0].fieldDataType.message)}
+                    </p>
+                  )} */}
                 </div>
                 <Input
                   label={t('form:input-label-max-length')}
@@ -411,6 +500,11 @@ const BillerCreateForm = () => {
                     getOptionValue={(option: any) => option.id}
                     options={mandatoryFlagOptions}
                   />
+                  {/* {errors.paymentData?.[0]?.mandatoryFlag?.message && (
+                    <p className="mt-1 text-xs text-red-500">
+                      {t(errors.paymentData[0].mandatoryFlag.message)}
+                    </p>
+                  )} */}
                 </div>
                 <div className="mb-5">
                   <Label>{t('form:input-label-input-or-output')}</Label>
@@ -421,6 +515,11 @@ const BillerCreateForm = () => {
                     getOptionValue={(option: any) => option.id}
                     options={inputOrOutputOptions}
                   />
+                  {/* {errors.paymentData?.[0]?.inputOrOutput?.message && (
+                    <p className="mt-1 text-xs text-red-500">
+                      {t(errors.paymentData[0].inputOrOutput.message)}
+                    </p>
+                  )} */}
                 </div>
               </div>
             </div>
