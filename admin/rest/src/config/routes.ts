@@ -1,3 +1,4 @@
+import BillersPage from "@/pages/billers";
 import { link } from "fs";
 
 export const Routes = {
@@ -66,6 +67,9 @@ export const Routes = {
   },
   report: {
     ...routesFactory('/reports'),
+  },
+  biller: {
+    ...routesFactory('/billers'),
   },
   collection: {
     ...routesFactory('/collections'),

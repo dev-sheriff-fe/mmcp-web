@@ -915,6 +915,61 @@ export interface Merchant {
   amount?: number;
   is_global?: boolean;
   type?: Merchant;
+  // products?: Product[];
+  // collections?: Collection[];
+  // billerCode: string;
+  // terminals?: Terminal[];
+}
+
+export interface Terminal {
+  id: string; // Unique database ID
+  terminalId: string; // Terminal identification number
+  serialNumber: string; // Hardware serial number
+  terminalModel: {
+    id: string;
+    name: string;
+    description?: string;
+  };
+  operatingSystem: string; // e.g., "Android 11", "Linux"
+  osVersion: string;
+  appVersion: string;
+  bank: {
+    id: string;
+    name: string;
+    code?: string;
+  };
+  merchant?: {
+    id: string;
+    name: string;
+  };
+  status: 'active' | 'inactive' | 'maintenance' | 'retired';
+  condition: 'new' | 'used' | 'refurbished' | 'damaged';
+  lastHeartbeat?: Date; // Last communication timestamp
+  location?: {
+    address: string;
+    latitude?: number;
+    longitude?: number;
+  };
+  configuration?: Record<string, any>; // Terminal-specific config
+  createdAt: Date;
+  updatedAt: Date;
+  createdBy?: string;
+  updatedBy?: string;
+}
+
+
+export interface Collection {
+  id: number;
+  fieldID: string;
+  fieldDataType: 'STRING' | 'NUMBER' | 'DATE';
+  fieldName: string;
+  fieldValue: string;
+  fieldComment: string;
+  lookupData: string;
+  maxLength: number;
+  mandatoryFlag: 'Y' | 'N';
+  billerCode: string;
+  inputOrOutput: 'I' | 'O';
 }
 
 export interface ShippingInput {
@@ -952,6 +1007,20 @@ export interface MerchantInput {
   createdAt?: Date;
   updatedAt?: Date;
 }
+
+export interface TerminalInput {
+  terminalId: string;
+  terminalSerialNo: string;
+  terminalModel?: SelectOption;
+  operatingSystem: string;
+  appVersion: string;
+  bank?: SelectOption;
+  terminalStatus?: SelectOption;
+  condition?: SelectOption;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+
 export interface SelectOption {
   id: string;
   name: string;
