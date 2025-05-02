@@ -6,6 +6,9 @@ import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
 import { Order, OrderStatus } from '@/types';
 import { useTranslation } from 'next-i18next';
+import { useQuery } from 'react-query';
+import axios from 'axios';
+import axiosInstance from '@/utils/fetch-function';
 
 type IProps = {
   orders: Order[];
@@ -16,19 +19,30 @@ const RecentOrders = ({ orders, title }: IProps) => {
   const { t } = useTranslation();
 
   const rowExpandable = (record: any) => record.children?.length;
+  const { data: summaryData } = useQuery('tran-summary', () =>
+    axiosInstance.get('/dashboard/reportSection', {
+      params: {
+        rptCategory: 'TRAN_SUMMARY_STATUS',
+        startDate: '10-01-2025',
+        endDate: '31-10-2025',
+        merchantCode: '',
+        datePeriod: '',
+      },
+    })
+  );
 
   const columns = [
     {
-      title: t('table:table-item-tracking-number'),
-      dataIndex: 'tracking_number',
-      key: 'tracking_number',
+      title: 'Title',
+      dataIndex: 'title',
+      key: 'title',
       align: 'center',
       width: 150,
     },
     {
-      title: t('table:table-item-total'),
-      dataIndex: 'total',
-      key: 'total',
+      title: 'amount',
+      dataIndex: 'amount',
+      key: 'amount',
       align: 'center',
       render: function Render(value: any) {
         const { price } = usePrice({
@@ -38,20 +52,10 @@ const RecentOrders = ({ orders, title }: IProps) => {
       },
     },
     {
-      title: t('table:table-item-order-date'),
-      dataIndex: 'created_at',
-      key: 'created_at',
+      title: 'Volume',
+      dataIndex: 'volume',
+      key: 'volume',
       align: 'center',
-      render: (date: string) => {
-        dayjs.extend(relativeTime);
-        dayjs.extend(utc);
-        dayjs.extend(timezone);
-        return (
-          <span className="whitespace-nowrap">
-            {dayjs.utc(date).tz(dayjs.tz.guess()).fromNow()}
-          </span>
-        );
-      },
     },
     {
       title: t('table:table-item-status'),
@@ -73,13 +77,13 @@ const RecentOrders = ({ orders, title }: IProps) => {
     <>
       <div className="overflow-hidden rounded shadow">
         <h3 className="border-b border-border-200 bg-light px-4 py-3 text-center font-semibold text-heading">
-          {title}
+          Tran Summary
         </h3>
         <Table
           //@ts-ignore
           columns={columns}
           emptyText={t('table:empty-table-data')}
-          data={orders}
+          data={summaryData?.data?.rowList}
           rowKey="id"
           scroll={{ x: 200 }}
           expandable={{

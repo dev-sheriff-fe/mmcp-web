@@ -33,7 +33,7 @@ export default function TerminalsPage() {
   const [terminalId, setTerminalId] = useState<string>('');
   const [status, setStatus] = useState<string>('');
   const [isLinkModalOpen, setIsLinkModalOpen] = useState(false);
-  const reportCode = useGetLookup('REPORT_CODE');
+  const reportCodes = useGetLookup('REPORT_CODE');
 
   const {
     merchantClasses: terminals,
@@ -125,6 +125,22 @@ export default function TerminalsPage() {
           </div>
         </div>
       </Card>
+      <div className="grid grid-cols-240 gap-8">
+        {reportCodes?.map((reportCode) => (
+          <Card key={reportCode.id} className="mb-4 flex flex-col gap-5">
+            <h1 className="text-xl font-semibold text-heading">
+              {reportCode.name}
+            </h1>
+
+            <LinkButton
+              href={`${'/reports/generate'}?code=${reportCode.id}`}
+              className="!h-8 w-full max-w-[100px] "
+            >
+              <span>View</span>
+            </LinkButton>
+          </Card>
+        ))}
+      </div>
 
       {/* <TerminalList
         onOrder={setOrder}

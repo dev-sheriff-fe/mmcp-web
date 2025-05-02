@@ -5,6 +5,7 @@ import { USFlag } from '@/components/icons/flags/USFlag';
 import { DEFlag } from '@/components/icons/flags/DEFlag';
 import { ILFlag } from '@/components/icons/flags/ILFlag';
 import { ESFlag } from '@/components/icons/flags/ESFlag';
+import { report } from 'process';
 
 const localeRTLList = ['ar', 'he'];
 export function useIsRTL() {
@@ -53,3 +54,17 @@ export let languageMenu = [
     icon: <ESFlag width="20px" height="15px" />,
   },
 ];
+export const generateReportColumn = (reports: any[]) => {
+  const reportColumns: any[] = reports?.length
+    ? Object.keys(reports[0]).map((item) => {
+        return {
+          title: item,
+          dataIndex: item,
+          key: item,
+          align: 'center',
+          width: 240,
+        };
+      })
+    : [];
+  return reportColumns;
+};
