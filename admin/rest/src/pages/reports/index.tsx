@@ -17,13 +17,14 @@ import { ArrowDown } from '@/components/icons/arrow-down';
 import { ArrowUp } from '@/components/icons/arrow-up';
 import CategoryTypeFilter from '@/components/terminal/category-type-filter';
 import LinkButton from '@/components/ui/link-button';
+import useGetLookup from '@/hooks/useGetLookup';
 
 export default function TerminalsPage() {
   const { t } = useTranslation();
   const router = useRouter();
   const { id } = router.query;
   const locale = router.locale;
-  
+
   const [searchTerm, setSearch] = useState('');
   const [orderBy, setOrder] = useState('created_at');
   const [sortedBy, setColumn] = useState<SortOrder>(SortOrder.Desc);
@@ -32,8 +33,13 @@ export default function TerminalsPage() {
   const [terminalId, setTerminalId] = useState<string>('');
   const [status, setStatus] = useState<string>('');
   const [isLinkModalOpen, setIsLinkModalOpen] = useState(false);
+  const reportCode = useGetLookup('REPORT_CODE');
 
-  const { merchantClasses: terminals, loading, error } = useShippingClassesQuery({
+  const {
+    merchantClasses: terminals,
+    loading,
+    error,
+  } = useShippingClassesQuery({
     name: searchTerm,
     orderBy,
     sortedBy,
@@ -90,7 +96,7 @@ export default function TerminalsPage() {
                 + {t('form:button-label-add')} {t('form:button-label-report')}
               </span>
             </LinkButton>
-            
+
             <button
               className="flex items-center whitespace-nowrap text-base font-semibold text-accent md:ms-5"
               onClick={toggleVisible}

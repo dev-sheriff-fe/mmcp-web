@@ -37,11 +37,11 @@ export const siteSettings = {
         label: 'sidebar-nav-item-dashboard',
         icon: 'DashboardIcon',
       },
-      {
-        href: Routes.shop.list,
-        label: 'sidebar-nav-item-shops',
-        icon: 'ShopIcon',
-      },
+      // {
+      //   href: Routes.shop.list,
+      //   label: 'sidebar-nav-item-shops',
+      //   icon: 'ShopIcon',
+      // },
       {
         href: Routes.user.list,
         label: 'sidebar-nav-item-users',
@@ -67,16 +67,16 @@ export const siteSettings = {
         label: 'sidebar-nav-item-terminals',
         icon: 'OrdersIcon',
       },
-      {
-        href: Routes.adminMyShops,
-        label: 'sidebar-nav-item-my-shops',
-        icon: 'MyShopIcon',
-      },
       // {
-      //   href: Routes.report.list,
-      //   label: 'sidebar-nav-item-reports',
-      //   icon: 'ReportsIcon',
+      //   href: Routes.adminMyShops,
+      //   label: 'sidebar-nav-item-my-shops',
+      //   icon: 'MyShopIcon',
       // },
+      {
+        href: Routes.report.list,
+        label: 'sidebar-nav-item-reports',
+        icon: 'ReportsIcon',
+      },
       // {
       //   href: Routes.attribute.list,
       //   label: 'sidebar-nav-item-attributes',
@@ -147,11 +147,11 @@ export const siteSettings = {
       //   label: 'sidebar-nav-item-refunds',
       //   icon: 'RefundsIcon',
       // },
-      {
-        href: Routes.question.list,
-        label: 'sidebar-nav-item-questions',
-        icon: 'QuestionIcon',
-      },
+      // {
+      //   href: Routes.question.list,
+      //   label: 'sidebar-nav-item-questions',
+      //   icon: 'QuestionIcon',
+      // },
       // {
       //   href: Routes.reviews.list,
       //   label: 'sidebar-nav-item-reviews',

@@ -23,7 +23,7 @@ export default function Dashboard() {
 
   const { price: total_revenue } = usePrice(
     data && {
-      amount: Number(data?.totalRevenue),
+      amount: Number(data?.totalTransactions),
     }
   );
   const { price: todays_revenue } = usePrice(
@@ -72,7 +72,7 @@ export default function Dashboard() {
       <div className="mb-6 grid w-full grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4">
         <div className="w-full ">
           <StickerCard
-            titleTransKey="sticker-card-title-rev"
+            titleTransKey="Total Transactions"
             subtitleTransKey="sticker-card-subtitle-rev"
             icon={<DollarIcon className="h-7 w-7" color="#047857" />}
             iconBgStyle={{ backgroundColor: '#A7F3D0' }}
@@ -81,25 +81,25 @@ export default function Dashboard() {
         </div>
         <div className="w-full ">
           <StickerCard
-            titleTransKey="sticker-card-title-order"
+            titleTransKey="Linked Terminals"
             subtitleTransKey="sticker-card-subtitle-order"
             icon={<CartIconBig />}
-            price={data?.totalOrders}
+            price={data?.totalLinkTerminals}
           />
         </div>
         <div className="w-full ">
           <StickerCard
-            titleTransKey="sticker-card-title-today-rev"
+            titleTransKey="Total Terminals"
             icon={<CoinIcon />}
-            price={todays_revenue}
+            price={data?.totalTerminals}
           />
         </div>
         <div className="w-full ">
           <StickerCard
-            titleTransKey="sticker-card-title-total-shops"
+            titleTransKey="Total Merchants"
             icon={<ShopIcon className="w-6" color="#1D4ED8" />}
             iconBgStyle={{ backgroundColor: '#93C5FD' }}
-            price={data?.totalShops}
+            price={data?.totalMerchants}
           />
         </div>
       </div>
