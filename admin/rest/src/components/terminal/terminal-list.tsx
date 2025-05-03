@@ -43,47 +43,53 @@ const TerminalList = ({ terminals, onSort, onOrder }: IProps) => {
   const columns = [
     {
       title: t('table:table-item-terminal-serial-no'),
-      dataIndex: 'TerminalSN',
-      key: 'TerminalSN',
+      dataIndex: 'serialNumber',
+      key: 'serialNumber',
       align: 'center',
-      width: 50,
-      render: (text: string, record: any, index: number) => index + 1,
+      width: 80,
     },
     {
       title: t('table:table-item-terminal-id'),
-      dataIndex: 'id',
-      key: 'id',
+      dataIndex: 'terminalId',
+      key: 'terminalId',
       align: 'center',
-      width: 50,
-    },
-    {
-      title: (
-        <TitleWithSort
-          title={t('table:table-item-name')}
-          ascending={
-            sortingObj.sort === SortOrder.Asc && sortingObj.column === 'name'
-          }
-          isActive={sortingObj.column === 'name'}
-        />
-      ),
-      className: 'cursor-pointer',
-      dataIndex: 'name',
-      key: 'name',
-      align: alignLeft,
-      width: 80,
-      onHeaderCell: () => onHeaderClick('name'),
-    },
-    {
-      title: t('table:table-item-wallet-id'),
-      dataIndex: 'name',
-      key: 'walletID',
-      align: alignLeft,
       width: 80,
     },
+    // {
+    //   title: (
+    //     <TitleWithSort
+    //       title={t('table:table-item-name')}
+    //       ascending={
+    //         sortingObj.sort === SortOrder.Asc && sortingObj.column === 'name'
+    //       }
+    //       isActive={sortingObj.column === 'name'}
+    //     />
+    //   ),
+    //   className: 'cursor-pointer',
+    //   dataIndex: 'name',
+    //   key: 'name',
+    //   align: alignLeft,
+    //   width: 80,
+    //   onHeaderCell: () => onHeaderClick('name'),
+    // },
     {
-      title: t('table:table-item-virtual-account-no'),
-      dataIndex: 'name',
-      key: 'VirtualAccountNo',
+      title: t('table:table-item-terminal-model'),
+      dataIndex: 'terminalModel',
+      key: 'terminalModel',
+      align: alignLeft,
+      width: 80,
+    },
+    {
+      title: t('table:table-item-merchant-id'),
+      dataIndex: 'merchantId',
+      key: 'merchantId',
+      align: 'center',
+      width: 80,
+    },
+    {
+      title: t('table:table-item-bank-name'),
+      dataIndex: 'bankName',
+      key: 'bankName',
       align: 'center',
       width: 80,
     },
@@ -95,26 +101,26 @@ const TerminalList = ({ terminals, onSort, onOrder }: IProps) => {
       width: 80,
     },
     {
-      title: t('table:table-item-branch-code'),
-      dataIndex: 'name',
-      key: 'BranchCode',
+      title: t('table:table-item-ptsp'),
+      dataIndex: 'ptsp',
+      key: 'ptsp',
       align: 'center',
       width: 80,
     },
     {
-      title: t('table:table-item-wallet-balance'),
-      dataIndex: 'name',
-      key: 'walletBalance',
+      title: t('table:table-item-address'),
+      dataIndex: 'address',
+      key: 'address',
       align: 'center',
       width: 80,
     },
-    {
-      title: t('table:table-item-terminal-name'),
-      dataIndex: 'name',
-      key: 'terminalName',
-      align: 'center',
-      width: 80,
-    },
+    // {
+    //   title: t('table:table-item-terminal-name'),
+    //   dataIndex: 'name',
+    //   key: 'terminalName',
+    //   align: 'center',
+    //   width: 80,
+    // },
     // {
     //   title: t('table:table-item-show-logo'),
     //   dataIndex: 'showLogo',
@@ -137,7 +143,7 @@ const TerminalList = ({ terminals, onSort, onOrder }: IProps) => {
     // },
     {
       title: t('table:table-item-status'),
-      dataIndex: 'name',
+      dataIndex: 'status',
       key: 'status',
       align: 'center',
       width: 80,

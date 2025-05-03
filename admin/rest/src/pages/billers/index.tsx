@@ -19,6 +19,7 @@ import { ArrowUp } from '@/components/icons/arrow-up';
 import axiosInstance from '@/utils/fetch-function';
 import { useQuery } from 'react-query';
 import BillerTypeFilter from '@/components/biller/category-type-filter';
+import { billerValidationSchema } from '@/components/biller/biller-validation-schema';
 
 export default function BillersPage() {
   const { t } = useTranslation();
@@ -42,6 +43,7 @@ export default function BillersPage() {
         params: {
           pageNumber: page,
           pageSize: 20,
+          // billerCode: "HOP12"
         },
       }),
     {}

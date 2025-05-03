@@ -107,16 +107,17 @@ const BillerList = ({ merchants, onSort, onOrder }: IProps) => {
     },
     {
       title: t('table:table-item-actions'),
-      dataIndex: 'id',
+      dataIndex: 'actions',
       key: 'actions',
       align: 'center',
       width: 80,
-      render: (id: string, record: any) => (
+      render: (_: any, record: any) => (
         <ActionButtons
-          id={id}
-          // editUrl={`${Routes.biller.list}/edit/${id}`}
+          id={record.id}
+          billerCode={record.billerCode}
           editModalView="BILLER_EDIT"
           editViewModal="BILLER_VIEW"
+          // showBillerModal={true}
         />
       ),
     },

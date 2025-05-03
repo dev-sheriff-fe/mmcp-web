@@ -10,97 +10,68 @@ import { useShippingClassesQuery } from '@/data/merchant';
 import { SortOrder } from '@/types';
 import { useQuery } from 'react-query';
 import { useRouter } from 'next/router';
-
 import axiosInstance from '@/utils/fetch-function';
 import ActionButtons from '@/components/common/action-buttons';
 import BillerProductList from '@/components/biller/biller-product-list';
 import BillerCollectionList from '@/components/biller/biller-collection-list';
 
-
 const BillerView = () => {
   const { t } = useTranslation();
   const router = useRouter();
-  const { data: billerData } = useModalState();
+  const { data: modalData } = useModalState();
+  const billerCode = modalData?.billerCode;
   const { closeModal } = useModalAction();
   const locale = router.locale;
   
   const [searchTerm, setSearch] = useState('');
-
   const [page, setPage] = useState(1);
   const [orderBy, setOrder] = useState('created_at');
   const [sortedBy, setColumn] = useState<SortOrder>(SortOrder.Desc);
   const [activeTab, setActiveTab] = useState<'products' | 'paymentData'>('products');
 
-  const { data: statusData } = useQuery(
-    'status',
-    () =>
-      axiosInstance.get(
-        'lookupdata/getdatabycategorycode/STATUS?entityCode=ETZ'
-      ),
-    {
-      select: (data) =>
-        data.data.map((item: any) => ({
-          id: item.lookupCode,
-          name: item.lookupName,
-          description: item.lookupDesc,
-        })),
-    }
-  );
-
-  // const { data, isLoading } = useQuery(
-  //   'billers',
-  //   () =>
-  //     axiosInstance.request({
-  //       method: 'GET',
-  //       url: 'mbillcollection/getBillersList',
-  //       params: {
-  //         pageNumber: page,
-  //         pageSize: 20,
-  //         billerCode: billerData?.billerCode,
-  //       },
-  //     }),
-  //   {}
+  // Get biller details
+  // const { data: billerDetails, isLoading } = useQuery(
+  //   ['biller-details', modalData?.billerCode],
+  //   async () => {
+  //     const response = await axiosInstance.get(
+  //       'getbillerdetail',
+  //       {
+  //         params: {
+  //           billerCode: modalData?.billerCode,
+  //         },
+  //       }
+  //     );
+  //     return response.data;
+  //   },
+  //   {
+  //     enabled: !!modalData?.billerCode, // Only run query if billerCode exists
+  //   }
   // );
-  const { data, isLoading } = useQuery(
-    ['biller', billerData?.billerCode], 
-    () =>
-      axiosInstance.request({
-        method: 'GET',
-        url: 'mbillcollection/getBillersList', 
-        params: {
-          billerCode: billerData?.billerCode,
-        },
-      }),
+
+  const { data: billerDetails, isLoading } = useQuery(
+    ['biller-details', billerCode],
+    async () => {
+      const response = await axiosInstance.get(
+        `billpayment/getbillerdetail?billerCode=${billerCode}`,
+        {
+          params: {
+            pageNumber: 1,
+            pageSize: 20,
+          },
+        }
+      );
+      return response.data;
+    },
     {
-      enabled: !!billerData?.billerCode,
+      enabled: !!billerCode,
+      onSuccess: (data) => {
+        console.log('Biller Details:', data);
+      },
     }
-  );
+  ); 
 
-  const billerDetails = data?.data;
-
-  const newPaginatorInfo = {
-    currentPage: page,
-    firstPageUrl: '',
-    from: 1,
-    lastPage: data?.data?.totalPages,
-    lastPageUrl: '',
-    links: [],
-    nextPageUrl: null,
-    path: '',
-    perPage: 20,
-    prevPageUrl: null,
-    to: 10,
-    total: data?.data?.totalCount,
-    hasMorePages: data?.data?.totalPages > page,
-  };
-  const { merchantClasses:billerProducts,merchantClasses:billerCollections, loading, error } = useShippingClassesQuery({
-    name: searchTerm,
-    orderBy,
-    sortedBy,
-    language: locale,
-    limit: 20,
-  });
-
+  const billerCollections = billerDetails?.paymentData || [];
+  const billerProducts = billerDetails?.products || [];
 
   return (
     <div className="m-auto w-[1000px] rounded bg-light px-4">
@@ -126,30 +97,35 @@ const BillerView = () => {
         </div>
 
         <div className="px-4 py-7">
-          {activeTab === 'products' && (
-            <div className="space-y-5">
-              <BillerProductList
-                onOrder={setOrder}
-                onSort={setColumn}
-                products={billerProducts}
-              />
-            </div>
-          )}
+          {isLoading ? (
+            <div>Loading biller details...</div>
+          ) : (
+            <>
+              <div className="mb-6">
+                <h2 className="text-lg font-semibold">{billerDetails?.billerName}</h2>
+                <p className="text-sm text-gray-600">Biller Code: {billerDetails?.billerCode}</p>
+              </div>
 
-          {activeTab === 'paymentData' && (
-            <div className="space-y-5">
-              {/* <div className="flex justify-between items-center mb-4">
-                <h3 className="text-lg font-semibold">{t('common:payment-data')}</h3>
-                <Button>
-                  {t('form:button-text-add-payment-data')}
-                </Button>
-              </div> */}
-              <BillerCollectionList
-                onOrder={setOrder}
-                onSort={setColumn}
-                collections={billerCollections}
-              />
-            </div>
+              {activeTab === 'products' && (
+                <div className="space-y-5">
+                  <BillerProductList
+                    onOrder={setOrder}
+                    onSort={setColumn}
+                    products={billerProducts}
+                  />
+                </div>
+              )}
+
+              {activeTab === 'paymentData' && (
+                <div className="space-y-5">
+                  <BillerCollectionList
+                    onOrder={setOrder}
+                    onSort={setColumn}
+                    collections={billerCollections}
+                  />
+                </div>
+              )}
+            </>
           )}
         </div>
       </div>

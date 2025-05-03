@@ -45,21 +45,6 @@ const bankOptions = [
   { id: 'zenith', name: 'Zenith Bank' },
 ];
 
-  const { data: statusData } = useQuery(
-    'status',
-    () =>
-      axiosInstance.get(
-        'lookupdata/getdatabycategorycode/STATUS?entityCode=ETZ'
-      ),
-    {
-      select: (data) =>
-        data.data.map((item: any) => ({
-          id: item.lookupCode,
-          name: item.lookupName,
-          description: item.lookupDesc,
-        })),
-    }
-  );
 
 const conditionOptions = [
   { id: 'new', name: 'New' },
@@ -80,6 +65,22 @@ export default function CreateTerminalForm({ initialValues }: IProps) {
     // defaultValues,
   });
 
+  const { data: statusData } = useQuery(
+    'status',
+    () =>
+      axiosInstance.get(
+        'lookupdata/getdatabycategorycode/STATUS?entityCode=ETZ'
+      ),
+    {
+      select: (data) =>
+        data.data.map((item: any) => ({
+          id: item.lookupCode,
+          name: item.lookupName,
+          description: item.lookupDesc,
+        })),
+    }
+  );
+  
   const { mutate: createShippingClass, isLoading: creating } =
     useCreateShippingMutation();
   const { mutate: updateShippingClass, isLoading: updating } =

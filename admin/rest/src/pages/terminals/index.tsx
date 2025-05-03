@@ -41,12 +41,14 @@ export default function TerminalsPage() {
     () =>
       axiosInstance.request({
         method: 'GET',
-        url: '/terminal/all',
+        url: '/terminals/all',
         params: {
           pageNumber: page,
-          pageSize: 20,
+          pageSize: 100,
           name: searchTerm,
           entityCode: 'ETZ',
+          bankCode: '',
+          terminalId: terminalId
         },
       }),
     {}
@@ -103,9 +105,9 @@ export default function TerminalsPage() {
 
           <div className="flex w-full flex-col items-center space-y-4 ms-auto md:flex-row md:space-y-0 xl:w-1/2">
             <Search onSearch={handleSearch} />
-            <button className="ml-5 inline-flex h-12 flex-shrink-0 items-center justify-center rounded border border-transparent bg-accent px-5 py-0 font-semibold leading-none text-light outline-none transition duration-300 ease-in-out hover:bg-accent-hover focus:shadow focus:outline-none">
+            {/* <button className="ml-5 inline-flex h-12 flex-shrink-0 items-center justify-center rounded border border-transparent bg-accent px-5 py-0 font-semibold leading-none text-light outline-none transition duration-300 ease-in-out hover:bg-accent-hover focus:shadow focus:outline-none">
               <Link href={'/terminals/create'}>Create Terminal</Link>
-            </button>
+            </button> */}
 
             <button
               onClick={() => setIsLinkModalOpen(true)}
@@ -155,7 +157,7 @@ export default function TerminalsPage() {
       <TerminalList
         onOrder={setOrder}
         onSort={setColumn}
-        terminals={terminals}
+        terminals={data?.data?.terminalList ?? terminals}
       />
 
       {/* Link Terminal Modal */}

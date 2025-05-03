@@ -7,36 +7,69 @@ import {
 import TextArea from '@/components/ui/text-area';
 import Input from '@/components/ui/input';
 import { useTranslation } from 'next-i18next';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import SelectInput from '@/components/ui/select-input';
 import Label from '@/components/ui/label';
-import { useQuery } from 'react-query';
+import { useQuery, useMutation } from 'react-query';
 import axiosInstance from '@/utils/fetch-function';
+import { toast } from 'react-toastify';
+import { useRouter } from 'next/router';
+
+type SelectOption = {
+  id: string;
+  name: string;
+};
+
+type ProductFormValues = {
+  productId: string;
+  productCode: string;
+  productName: string;
+  productDesc: string;
+  amount: number;
+  amountType: string | SelectOption;
+  status: string | SelectOption;
+};
+
+type PaymentDataFormValues = {
+  fieldID: string;
+  fieldName: string;
+  fieldDataType: string | SelectOption;
+  maxLength: number;
+  mandatoryFlag: string | SelectOption;
+  inputOrOutput: string | SelectOption;
+};
 
 type FormValues = {
-  products: Array<{
-    productId: string;
-    productCode: string;
-    productName: string;
-    productDesc: string;
-    amount: number;
-    amountType: string;
-    status: string;
-  }>;
-  paymentData: Array<{
-    fieldID: string;
-    fieldName: string;
-    fieldDataType: string;
-    maxLength: number;
-    mandatoryFlag: string;
-  }>;
+  products: ProductFormValues[];
+  paymentData: PaymentDataFormValues[];
 };
 
 const BillerEdit = () => {
   const { t } = useTranslation();
-  const { data } = useModalState();
+  const router = useRouter();
+  const { data: modalData } = useModalState();
   const { closeModal } = useModalAction();
   const [activeTab, setActiveTab] = useState<'products' | 'paymentData'>('products');
+  const billerCode = modalData?.billerCode;
+
+  const { data: billerDetails, isLoading } = useQuery(
+    ['biller-details', billerCode],
+    async () => {
+      const response = await axiosInstance.get(
+        `billpayment/getbillerdetail?billerCode=${billerCode}`,
+        {
+          params: {
+            pageNumber: 1,
+            pageSize: 20,
+          },
+        }
+      );
+      return response.data;
+    },
+    {
+      enabled: !!billerCode,
+    }
+  );
 
   const { data: statusData } = useQuery(
     'status',
@@ -54,20 +87,25 @@ const BillerEdit = () => {
     }
   );
 
-  const amountTypeOptions = [
+  const amountTypeOptions: SelectOption[] = [
     { id: 'FIXED', name: 'Fixed' },
     { id: 'VARIABLE', name: 'Variable' }
   ];
 
-  const datatypeOptions = [
+  const datatypeOptions: SelectOption[] = [
     { id: 'STRING', name: 'String' },
     { id: 'NUMBER', name: 'Number' },
     { id: 'DATE', name: 'Date' },
   ];
 
-  const mandatoryFlagOptions = [
+  const mandatoryFlagOptions: SelectOption[] = [
     { id: 'Y', name: 'Yes' },
     { id: 'N', name: 'No' },
+  ];
+
+  const inputOrOutputOptions: SelectOption[] = [
+    { id: 'I', name: 'Input' },
+    { id: 'O', name: 'Output' },
   ];
 
   const {
@@ -75,30 +113,156 @@ const BillerEdit = () => {
     handleSubmit,
     control,
     formState: { errors },
-  } = useForm<FormValues>({
-    defaultValues: {
-      products: data?.products || [{
-        productId: '',
-        productCode: '',
-        productName: '',
-        productDesc: '',
-        amount: 0,
-        amountType: 'FIXED',
-        status: 'Active',
-      }],
-      paymentData: data?.paymentData || [{
-        fieldID: '',
-        fieldName: '',
-        fieldDataType: 'STRING',
-        maxLength: 0,
-        mandatoryFlag: 'Y',
-      }]
-    },
-  });
+    reset,
+    setError,
+  } = useForm<FormValues>();
 
-  function onSubmit(values: FormValues) {
-    console.log(values);
-    closeModal();
+  useEffect(() => {
+    if (billerDetails) {
+      const initialValues: FormValues = {
+        products: billerDetails.products?.map((product: ProductFormValues) => ({
+          ...product,
+          amountType: product.amountType,
+          status: product.status
+        })) || [{
+          productId: '',
+          productCode: '',
+          productName: '',
+          productDesc: '',
+          amount: 0,
+          amountType: 'FIXED',
+          status: 'Active',
+        }],
+        paymentData: billerDetails.paymentData?.map((data: PaymentDataFormValues) => ({
+          ...data,
+          fieldDataType: data.fieldDataType,
+          mandatoryFlag: data.mandatoryFlag,
+          inputOrOutput: data.inputOrOutput || 'I'
+        })) || [{
+          fieldID: '',
+          fieldName: '',
+          fieldDataType: 'STRING',
+          maxLength: 0,
+          mandatoryFlag: 'Y',
+          inputOrOutput: 'I',
+        }]
+      };
+      reset(initialValues);
+    }
+  }, [billerDetails, reset]);
+
+  const getOptionId = (value: string | SelectOption): string => {
+    return typeof value === 'object' ? value.id : value;
+  };
+
+  const { mutate: saveProduct, isLoading: savingProduct } = useMutation(
+    (formData: Omit<ProductFormValues, 'amountType' | 'status'> & {
+      amountType: string;
+      status: string;
+    }) =>
+      axiosInstance.request({
+        method: 'POST',
+        url: 'billpayment/saveBillerProduct',
+        data: {
+          ...formData,
+          billerCode,
+          countryCode: 'NG',
+          userlang: 'en',
+          deviceId: '0001',
+          channelType: 'POS',
+          entityCode: 'ETZ',
+        },
+      }),
+    {
+      onSuccess: (data) => {
+        if (data?.data?.code !== '000') {
+          toast.error(data?.data?.desc);
+          return;
+        }
+        toast.success(t('form:product-saved-success'));
+        closeModal();
+      },
+      onError: (error: any) => {
+        handleApiError(error, setError, t);
+      },
+    }
+  );
+
+  const { mutate: saveCollection, isLoading: savingCollection } = useMutation(
+    (formData: Omit<PaymentDataFormValues, 'fieldDataType' | 'mandatoryFlag' | 'inputOrOutput'> & {
+      fieldDataType: string;
+      mandatoryFlag: string;
+      inputOrOutput: string;
+    }) =>
+      axiosInstance.request({
+        method: 'POST',
+        url: 'billpayment/saveBillerCollectionField',
+        data: {
+          ...formData,
+          billerCode,
+          countryCode: 'NG',
+          userlang: 'en',
+          deviceId: '0001',
+          channelType: 'POS',
+          entityCode: 'ETZ',
+        },
+      }),
+    {
+      onSuccess: (data) => {
+        if (data?.data?.code !== '000') {
+          toast.error(data?.data?.desc);
+          return;
+        }
+        toast.success(t('form:collection-saved-success'));
+        closeModal();
+      },
+      onError: (error: any) => {
+        handleApiError(error, setError, t);
+      },
+    }
+  );
+
+  const handleApiError = (error: any, setError: any, t: any) => {
+    if (error?.response?.data) {
+      if (error.response.status === 400) {
+        toast.error('Bad request');
+      } else if (error.response.status === 422) {
+        toast.error(t('common:error-saving-data'));
+      } else if (error.response.status === 500) {
+        toast.error(t('common:error-saving-data'));
+      }
+      Object.keys(error.response.data).forEach((field: any) => {
+        setError(field as any, {
+          type: 'manual',
+          message: error.response.data[field][0],
+        });
+      });
+    } else {
+      toast.error(t('common:error-saving-data'));
+    }
+  };
+
+  const onSubmitProduct = (values: FormValues) => {
+    const productData = values.products[0];
+    saveProduct({
+      ...productData,
+      amountType: getOptionId(productData.amountType),
+      status: getOptionId(productData.status),
+    });
+  };
+
+  const onSubmitCollection = (values: FormValues) => {
+    const collectionData = values.paymentData[0];
+    saveCollection({
+      ...collectionData,
+      fieldDataType: getOptionId(collectionData.fieldDataType),
+      mandatoryFlag: getOptionId(collectionData.mandatoryFlag),
+      inputOrOutput: getOptionId(collectionData.inputOrOutput),
+    });
+  };
+
+  if (isLoading) {
+    return <div>Loading Collection Management...</div>;
   }
 
   return (
@@ -128,8 +292,8 @@ const BillerEdit = () => {
           {activeTab === 'products' && (
             <div className="space-y-5">
               <h3 className="text-lg font-semibold">{t('common:products')}</h3>
-              <form onSubmit={handleSubmit(onSubmit)}>
-                <div className="grid grid-cols-1 gap-5 md:grid-cols-2 mt-10">
+              <form onSubmit={handleSubmit(onSubmitProduct)}>
+              <div className="grid grid-cols-1 gap-5 md:grid-cols-2 mt-10">
                   <Input
                     label={t('form:input-label-product-id')}
                     {...register(`products.0.productId` as const)}
@@ -189,9 +353,12 @@ const BillerEdit = () => {
                     />
                   </div>
                 </div>
-
                 <div className="mt-8 flex justify-end">
-                  <Button type="submit">
+                  <Button 
+                    type="submit"
+                    loading={savingProduct}
+                    disabled={savingProduct}
+                  >
                     {t('form:button-text-save-product')}
                   </Button>
                 </div>
@@ -202,8 +369,8 @@ const BillerEdit = () => {
           {activeTab === 'paymentData' && (
             <div className="space-y-5">
               <h3 className="text-lg font-semibold">{t('common:payment-data')}</h3>
-              <form onSubmit={handleSubmit(onSubmit)}>
-                <div className="grid grid-cols-1 gap-5 md:grid-cols-2 mt-10">
+              <form onSubmit={handleSubmit(onSubmitCollection)}>
+              <div className="grid grid-cols-1 gap-5 md:grid-cols-2 mt-10">
                   <Input
                     label={t('form:input-label-field-id')}
                     {...register(`paymentData.0.fieldID` as const)}
@@ -247,10 +414,28 @@ const BillerEdit = () => {
                       options={mandatoryFlagOptions}
                     />
                   </div>
+                  <div className="mb-5">
+                    <Label>{t('form:input-label-input-or-output')}</Label>
+                    <SelectInput
+                      name="paymentData.0.inputOrOutput"
+                      control={control}
+                      getOptionLabel={(option: any) => option.name}
+                      getOptionValue={(option: any) => option.id}
+                      options={inputOrOutputOptions}
+                    />
+                    {/* {errors.paymentData?.[0]?.inputOrOutput?.message && (
+                      <p className="mt-1 text-xs text-red-500">
+                        {t(errors.paymentData[0].inputOrOutput.message)}
+                      </p>
+                    )} */}
+                  </div>
                 </div>
-
                 <div className="mt-8 flex justify-end">
-                  <Button type="submit">
+                  <Button 
+                    type="submit"
+                    loading={savingCollection}
+                    disabled={savingCollection}
+                  >
                     {t('form:button-text-save-collection')}
                   </Button>
                 </div>

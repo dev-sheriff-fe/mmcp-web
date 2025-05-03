@@ -44,8 +44,8 @@ type IProps = {
 };
 
 const businessTypeOptions = [
-  { id: 'Individual', name: 'Individual' },
-  { id: 'Corporate', name: 'Corporate' },
+  { id: 'INDIVIDUAL', name: 'Individual' },
+  { id: 'CORPORATE', name: 'Corporate' },
   { id: 'COLLECTION', name: 'Collection' },
 ];
 
@@ -55,9 +55,9 @@ const stateOptions = [
 ];
 
 const settlementTypeOptions = [
-  { id: 'daily', name: 'Daily' },
-  { id: 'weekly', name: 'Weekly' },
+  { id: 'WALLET', name: 'Wallet' },
   { id: 'BANK_ACCOUNT', name: 'Bank Account' },
+  { id: 'NO_SETTLEMENT', name: 'No Settlement' }
 ];
 
 const bankOptions = [

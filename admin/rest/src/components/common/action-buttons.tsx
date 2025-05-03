@@ -27,10 +27,12 @@ type Props = {
   showReplyQuestion?: boolean;
   showBillerModal?: boolean;
   customLocale?: string;
+  billerCode?: string;
 };
 
 const ActionButtons = ({
   id,
+  billerCode,
   editModalView,
   editViewModal,
   deleteModalView,
@@ -54,12 +56,38 @@ const ActionButtons = ({
     openModal(deleteModalView, id);
   }
 
+  // function handleEditModal() {
+  //   openModal(editModalView, id);
+  // }
+
+  // function handleEditViewModal() {
+  //   openModal(editViewModal, id);
+  // }
+
+  // function handleBillerView() {
+  //   openModal('BILLER_VIEW', { 
+  //     billerCode: billerCode
+  //   });
+  // }
+
+  // function handleBillerEdit() {
+  //   openModal('BILLER_EDIT', { 
+  //     billerCode: billerCode
+  //   });
+  // }
+
   function handleEditModal() {
-    openModal(editModalView, id);
+    openModal(editModalView, { 
+      id,
+      billerCode: billerCode
+    });
   }
 
   function handleEditViewModal() {
-    openModal(editViewModal, id);
+    openModal(editViewModal, { 
+      id,
+      billerCode: billerCode
+    });
   }
 
   function handleUserStatus(type: string) {
@@ -91,11 +119,15 @@ const ActionButtons = ({
   }
 
   function handleBillerView() {
-    openModal('BILLER_VIEW', id);
+    openModal('BILLER_VIEW', { 
+      billerCode: billerCode
+    });
   }
 
   function handleBillerEdit() {
-    openModal('BILLER_EDIT', id);
+    openModal('BILLER_EDIT', { 
+      billerCode: billerCode
+    });
   }
 
   return (
