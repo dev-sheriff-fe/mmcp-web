@@ -18,6 +18,8 @@ import FileInput from '@/components/ui/file-input';
 import { toast } from 'react-toastify';
 import axiosInstance from '@/utils/fetch-function';
 import { useMutation } from 'react-query';
+import useGetLookup from '@/hooks/useGetLookup';
+
 
 const defaultValues = {
   merchantId: '',
@@ -43,26 +45,15 @@ type IProps = {
   initialValues?: Shipping | undefined | null;
 };
 
-const businessTypeOptions = [
-  { id: 'Individual', name: 'Individual' },
-  { id: 'Corporate', name: 'Corporate' },
-  { id: 'COLLECTION', name: 'Collection' },
-];
-
 const stateOptions = [
   { id: 'lagos', name: 'Lagos' },
   { id: 'abuja', name: 'Abuja' },
 ];
 
 const settlementTypeOptions = [
-  { id: 'daily', name: 'Daily' },
-  { id: 'weekly', name: 'Weekly' },
+  { id: 'WALLET', name: 'Wallet' },
   { id: 'BANK_ACCOUNT', name: 'Bank Account' },
-];
-
-const bankOptions = [
-  { id: 'access', name: 'Access Bank' },
-  { id: 'zenith', name: 'Zenith Bank' },
+  { id: 'NO_SETTLEMENT', name: 'No Settlement' }
 ];
 
 const genderOptions = [
@@ -73,6 +64,11 @@ const genderOptions = [
 export default function CreateOrUpdateMerchantForm({ initialValues }: IProps) {
   const router = useRouter();
   const { t } = useTranslation();
+  const bankOptions = useGetLookup('BANK');
+  // const stateOptions = useGetLookup('STATES');
+  const businessTypeOptions = useGetLookup('BUSINESS_TYPE');
+
+  
   const {
     register,
     handleSubmit,
@@ -162,7 +158,7 @@ export default function CreateOrUpdateMerchantForm({ initialValues }: IProps) {
       settlementBank: values.bank?.id,
       settlementBankAccount: values.settlementAccount,
       // settlementAccountName: values.settlementAccountName,
-      // terminalId: values.terminalId,
+      terminalId: values.terminalId,
       terminalSerialNo: values.terminalSerialNo,
 
       // File
@@ -197,6 +193,7 @@ export default function CreateOrUpdateMerchantForm({ initialValues }: IProps) {
             {...register('firstName')}
             variant="outline"
             className="mb-5"
+            disabled={true}
           />
 
           <Input
@@ -204,6 +201,8 @@ export default function CreateOrUpdateMerchantForm({ initialValues }: IProps) {
             {...register('lastName')}
             variant="outline"
             className="mb-5"
+            disabled={true}
+
           />
 
           <Input
@@ -221,6 +220,8 @@ export default function CreateOrUpdateMerchantForm({ initialValues }: IProps) {
               getOptionLabel={(option: any) => option.name}
               getOptionValue={(option: any) => option.id}
               options={genderOptions}
+              disabled={true}
+
             />
           </div>
         </div>
@@ -233,12 +234,12 @@ export default function CreateOrUpdateMerchantForm({ initialValues }: IProps) {
             </h3>
           </div>
 
-          <Input
+          {/* <Input
             label={t('form:input-label-merchant-id')}
             {...register('merchantId')}
             variant="outline"
             className="mb-5"
-          />
+          /> */}
 
           <Input
             label={t('form:input-label-business-name')}
@@ -263,6 +264,7 @@ export default function CreateOrUpdateMerchantForm({ initialValues }: IProps) {
             {...register('registrationNo')}
             variant="outline"
             className="mb-5"
+            disabled={true}
           />
         </div>
 
@@ -341,6 +343,7 @@ export default function CreateOrUpdateMerchantForm({ initialValues }: IProps) {
             {...register('settlementAccount')}
             variant="outline"
             className="mb-5"
+            
           />
 
           <Input
@@ -348,6 +351,8 @@ export default function CreateOrUpdateMerchantForm({ initialValues }: IProps) {
             {...register('settlementAccountName')}
             variant="outline"
             className="mb-5"
+            disabled={true}
+
           />
 
           <Input
@@ -355,6 +360,7 @@ export default function CreateOrUpdateMerchantForm({ initialValues }: IProps) {
             {...register('terminalId')}
             variant="outline"
             className="mb-5"
+
           />
 
           <Input
@@ -368,7 +374,7 @@ export default function CreateOrUpdateMerchantForm({ initialValues }: IProps) {
         <div className="mb-5">
           <Label>{t('form:input-label-business-logo')}</Label>
           <FileInput
-            name="marchant.businessLogo"
+            name="merchant.businessLogo"
             control={control}
             multiple={false}
           />

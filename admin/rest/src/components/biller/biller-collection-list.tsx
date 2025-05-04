@@ -54,7 +54,7 @@ const BillerCollectionList = ({ collections, onSort, onOrder }: IProps) => {
       dataIndex: 'fieldID',
       key: 'fieldID',
       align: 'center',
-      width: 50,
+      width: 80,
     },
     {
       title: t('table:table-item-field-name'),

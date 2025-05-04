@@ -59,7 +59,7 @@ export default function Dashboard() {
         <div className="w-full ">
           <StickerCard
             titleTransKey="Total Transactions"
-            subtitleTransKey="sticker-card-subtitle-rev"
+            // subtitleTransKey="sticker-card-subtitle-rev"
             icon={<DollarIcon className="h-7 w-7" color="#047857" />}
             iconBgStyle={{ backgroundColor: '#A7F3D0' }}
             price={total_revenue}
@@ -68,7 +68,7 @@ export default function Dashboard() {
         <div className="w-full ">
           <StickerCard
             titleTransKey="Linked Terminals"
-            subtitleTransKey="sticker-card-subtitle-order"
+            // subtitleTransKey="sticker-card-subtitle-order"
             icon={<CartIconBig />}
             price={data?.totalLinkTerminals}
           />

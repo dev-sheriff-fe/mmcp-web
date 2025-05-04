@@ -47,11 +47,11 @@ export const siteSettings = {
         label: 'sidebar-nav-item-users',
         icon: 'UsersIcon',
       },
-      {
-        href: Routes.product.list,
-        label: 'sidebar-nav-item-products',
-        icon: 'ProductsIcon',
-      },
+      // {
+      //   href: Routes.product.list,
+      //   label: 'sidebar-nav-item-products',
+      //   icon: 'ProductsIcon',
+      // },
       {
         href: Routes.transaction.list,
         label: 'sidebar-nav-item-transactions',
@@ -60,7 +60,7 @@ export const siteSettings = {
       {
         href: Routes.biller.list,
         label: 'sidebar-nav-item-billers',
-        icon: 'WithdrawIcon',
+        icon: 'ProductsIcon',
       },
       {
         href: Routes.merchant.list,

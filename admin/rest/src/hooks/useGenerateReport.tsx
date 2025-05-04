@@ -2,8 +2,11 @@ import axiosInstance from '@/utils/fetch-function';
 import { AxiosResponse } from 'axios';
 import { useState } from 'react';
 import { useMutation, useQuery } from 'react-query';
+import { toast } from 'react-toastify';
+import { useRouter } from 'next/router';
 
 const useGenerateReport = () => {
+  const router = useRouter();
   const [searchParams] = useState(
     () => new URLSearchParams(window.location.search)
   );
@@ -33,7 +36,7 @@ const useGenerateReport = () => {
         },
       })
   );
-  const reports = data?.data?.data?.list ?? [];
+  const reports = data?.data ?? [];
   const downloadMutation = useMutation(
     () =>
       axiosInstance.request({
@@ -59,6 +62,7 @@ const useGenerateReport = () => {
       }),
     {
       onSuccess: (response) => {
+        toast.success('Report Downloaded successfully');
         const url = window.URL.createObjectURL(new Blob([response.data]));
         const a = document.createElement('a');
         a.href = url;

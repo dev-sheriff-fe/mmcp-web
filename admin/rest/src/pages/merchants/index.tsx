@@ -118,7 +118,7 @@ export default function MerchantsPage() {
               className="h-12 w-full md:w-auto md:ms-6"
             >
               <span>
-                + {t('form:button-label-create')}{' '}
+                {t('form:button-label-create')}{' '}
                 {t('form:button-label-merchant')}
               </span>
             </LinkButton>

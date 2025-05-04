@@ -18,6 +18,8 @@ import FileInput from '@/components/ui/file-input';
 import { toast } from 'react-toastify';
 import axiosInstance from '@/utils/fetch-function';
 import { useMutation, useQuery } from 'react-query';
+import useGetLookup from '@/hooks/useGetLookup';
+
 
 const defaultValues = {
   terminalId: '',
@@ -45,21 +47,6 @@ const bankOptions = [
   { id: 'zenith', name: 'Zenith Bank' },
 ];
 
-  const { data: statusData } = useQuery(
-    'status',
-    () =>
-      axiosInstance.get(
-        'lookupdata/getdatabycategorycode/STATUS?entityCode=ETZ'
-      ),
-    {
-      select: (data) =>
-        data.data.map((item: any) => ({
-          id: item.lookupCode,
-          name: item.lookupName,
-          description: item.lookupDesc,
-        })),
-    }
-  );
 
 const conditionOptions = [
   { id: 'new', name: 'New' },
@@ -70,6 +57,10 @@ const conditionOptions = [
 export default function CreateTerminalForm({ initialValues }: IProps) {
   const router = useRouter();
   const { t } = useTranslation();
+  const terminalModelOptions = useGetLookup('TERMINAL_MODEL');
+  const bankOptions = useGetLookup('BANK');
+  const terminalStatusOptions = useGetLookup('TERMINAL_STATUS');
+  
   const {
     register,
     handleSubmit,
@@ -79,7 +70,7 @@ export default function CreateTerminalForm({ initialValues }: IProps) {
     shouldUnregister: true,
     // defaultValues,
   });
-
+  
   const { mutate: createShippingClass, isLoading: creating } =
     useCreateShippingMutation();
   const { mutate: updateShippingClass, isLoading: updating } =
@@ -88,7 +79,7 @@ export default function CreateTerminalForm({ initialValues }: IProps) {
     (formData: any) =>
       axiosInstance.request({
         method: 'POST',
-        url: 'terminal/create',
+        url: '/terminals/save',
         data: formData,
       }),
     {
@@ -204,8 +195,8 @@ export default function CreateTerminalForm({ initialValues }: IProps) {
               control={control}
               getOptionLabel={(option: any) => option.name}
               getOptionValue={(option: any) => option.id}
-              options={statusData || []}
-              isLoading={!statusData}
+              options={terminalStatusOptions || []}
+              isLoading={!terminalStatusOptions}
             />
           </div>
 
