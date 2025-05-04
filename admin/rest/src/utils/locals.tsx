@@ -62,7 +62,7 @@ export const generateReportColumn = (reports: any[]) => {
           dataIndex: item,
           key: item,
           align: 'center',
-          width: 240,
+          width: 500,
         };
       })
     : [];
