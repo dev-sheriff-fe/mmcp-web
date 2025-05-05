@@ -24,10 +24,17 @@ import Layout from '@/components/layouts/admin';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { useQuery } from 'react-query';
 import axiosInstance from '@/utils/fetch-function';
+import TerminalList from '@/components/terminal/terminal-list';
+import { useState } from 'react';
+import { SortOrder } from '@/types';
+import { Table } from '@/components/ui/table';
 
-const MerchantDetails = ({ merchantId }: { merchantId: string }) => {
+const MerchantDetails = () => {
   const { t } = useTranslation();
   const { locale } = useRouter();
+  const { query } = useRouter();
+  const [orderBy, setOrder] = useState('created_at');
+  const [sortedBy, setColumn] = useState<SortOrder>(SortOrder.Desc);
   const {
     data,
     isLoading: loading,
@@ -35,14 +42,17 @@ const MerchantDetails = ({ merchantId }: { merchantId: string }) => {
   } = useQuery('merchantDetails', () =>
     axiosInstance.request({
       method: 'GET',
-      url: `/merchant/${merchantId}`,
+      url: `merchant/terminallinked`,
+      params: {
+        merchantCode: query?.id,
+        entityCode: 'ETZ',
+      },
     })
   );
   if (loading) return <Loader text={t('common:text-loading')} />;
-  if (error) return <ErrorMessage message={error.toString()} />;
 
   return (
-    <div className="grid grid-cols-12 gap-6">
+    <div className="">
       {/* Back button */}
       <div className="col-span-12">
         <LinkButton href={Routes.merchant.list} className="mb-4">
@@ -55,12 +65,12 @@ const MerchantDetails = ({ merchantId }: { merchantId: string }) => {
         <div className="flex flex-col items-center rounded bg-white py-8 px-6">
           <div className="relative mb-5 h-36 w-36 rounded-full">
             <div className="relative flex h-full w-full items-center justify-center overflow-hidden rounded-full border border-gray-100">
-              {/* <Image
-                src={logo?.thumbnail ?? '/avatar-placeholder.svg'}
+              <Image
+                src={'/avatar-placeholder.svg'}
                 layout="fill"
                 objectFit="contain"
-                alt={name}
-              /> */}
+                alt={'image'}
+              />
             </div>
 
             {/* {is_active ? (
@@ -249,6 +259,15 @@ const MerchantDetails = ({ merchantId }: { merchantId: string }) => {
         </div>
       </div> */}
       </div>
+
+      <Table
+        //@ts-ignore
+        columns={generateReportColumn(data?.data)}
+        emptyText={t('table:empty-table-data')}
+        data={data?.data ?? []}
+        rowKey="id"
+        scroll={{ x: 900 }}
+      />
     </div>
   );
 };
