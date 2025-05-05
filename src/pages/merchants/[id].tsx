@@ -28,6 +28,7 @@ import TerminalList from '@/components/terminal/terminal-list';
 import { useState } from 'react';
 import { SortOrder } from '@/types';
 import { Table } from '@/components/ui/table';
+import { generateReportColumn } from '@/utils/locals';
 
 const MerchantDetails = () => {
   const { t } = useTranslation();
