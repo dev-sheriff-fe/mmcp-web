@@ -33,14 +33,13 @@ yarn-error.log*
 
 # vercel
 .vercel
+vercel.*.json
 
-# typescript
-*.tsbuildinfo
+# graphql-let
+__generated__
+*.graphql.d.ts
+*.graphqls.d.ts
 
-# PWA files
-**/public/sw.js
-**/public/workbox-*.js
-**/public/worker-*.js
-**/public/sw.js.map
-**/public/workbox-*.js.map
-**/public/worker-*.js.map
+# PWA
+workbox-*.js
+sw.js

@@ -127,15 +127,15 @@ const MerchantList = ({ merchants, onSort, onOrder }: IProps) => {
     },
     {
       title: t('table:table-item-actions'),
-      dataIndex: 'id',
-      key: 'id',
+      dataIndex: 'merchantId',
+      key: 'merchantId',
       align: 'center',
       width: 50,
-      render: (id: string, { slug, is_active }: any) => (
+      render: (merchantId: string, { slug, is_active }: any) => (
         <ActionButtons
-          id={id}
-          editUrl={`${Routes.merchant.list}/edit/${id}`}
-          detailsUrl={`/${id}`}
+          id={merchantId}
+          editUrl={`${Routes.merchant.list}/edit/${merchantId}`}
+          detailsUrl={`${Routes.merchant.list}/${merchantId}`}
           // addTerminalUrl={`${Routes.merchant.list}/${id}/add-terminal`}
         />
       ),

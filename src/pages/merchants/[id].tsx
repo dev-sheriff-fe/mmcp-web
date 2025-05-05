@@ -20,38 +20,33 @@ import { DollarIcon } from '@/components/icons/shops/dollar';
 import dayjs from 'dayjs';
 import LinkButton from '@/components/ui/link-button';
 import { Routes } from '@/config/routes';
+import Layout from '@/components/layouts/admin';
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
+import { useQuery } from 'react-query';
+import axiosInstance from '@/utils/fetch-function';
 
 const MerchantDetails = ({ merchantId }: { merchantId: string }) => {
   const { t } = useTranslation();
   const { locale } = useRouter();
-  const { data, loading, error } = useShippingClassesQuery();
-
-  if (loading) return <Loader text={t('common:text-loading')} />;
-  if (error) return <ErrorMessage message={error.message} />;
-
   const {
-    name,
-    is_active,
-    logo,
-    description,
-    products_count,
-    orders_count,
-    balance,
-    address,
-    created_at,
-    settings,
-    slug,
-  } = data ?? {};
+    data,
+    isLoading: loading,
+    error,
+  } = useQuery('merchantDetails', () =>
+    axiosInstance.request({
+      method: 'GET',
+      url: `/merchant/${merchantId}`,
+    })
+  );
+  if (loading) return <Loader text={t('common:text-loading')} />;
+  if (error) return <ErrorMessage message={error.toString()} />;
 
   return (
     <div className="grid grid-cols-12 gap-6">
       {/* Back button */}
       <div className="col-span-12">
-        <LinkButton
-          href={Routes.merchant.list}
-          className="mb-4"
-        >
-          {t('common:text-back-to-merchants')}
+        <LinkButton href={Routes.merchant.list} className="mb-4">
+          {t('Merchants')}
         </LinkButton>
       </div>
 
@@ -60,35 +55,35 @@ const MerchantDetails = ({ merchantId }: { merchantId: string }) => {
         <div className="flex flex-col items-center rounded bg-white py-8 px-6">
           <div className="relative mb-5 h-36 w-36 rounded-full">
             <div className="relative flex h-full w-full items-center justify-center overflow-hidden rounded-full border border-gray-100">
-              <Image
+              {/* <Image
                 src={logo?.thumbnail ?? '/avatar-placeholder.svg'}
                 layout="fill"
                 objectFit="contain"
                 alt={name}
-              />
+              /> */}
             </div>
 
-            {is_active ? (
-              <div className="end-2 absolute bottom-4 h-5 w-5 overflow-hidden rounded-full bg-light">
-                <CheckMarkFill width={20} className="me-2 text-accent" />
+            {/* {is_active ? (
+              <div className="absolute bottom-4 h-5 w-5 overflow-hidden rounded-full bg-light end-2">
+                <CheckMarkFill width={20} className="text-accent me-2" />
               </div>
             ) : (
-              <div className="end-2 absolute bottom-4 h-5 w-5 overflow-hidden rounded-full bg-light">
-                <CloseFillIcon width={20} className="me-2 text-red-500" />
+              <div className="absolute bottom-4 h-5 w-5 overflow-hidden rounded-full bg-light end-2">
+                <CloseFillIcon width={20} className="text-red-500 me-2" />
               </div>
             )}
-          </div>
+          </div> */}
 
-          <h1 className="mb-2 text-xl font-semibold text-heading">{name}</h1>
+            {/* <h1 className="mb-2 text-xl font-semibold text-heading">{name}</h1>
           <p className="text-center text-sm text-body">
             <ReadMore character={70}>{description!}</ReadMore>
           </p>
 
           <div className="mt-5 flex w-full justify-start">
-            <span className="me-2 mt-0.5 text-muted-light">
+            <span className="mt-0.5 text-muted-light me-2">
               <MapPin width={16} />
             </span>
-            <address className="text-sm not-italic text-body flex flex-col">
+            <address className="flex flex-col text-sm not-italic text-body">
               {!isEmpty(formatAddress(address!))
                 ? formatAddress(address!)
                 : t('common:text-no-address')}
@@ -96,7 +91,7 @@ const MerchantDetails = ({ merchantId }: { merchantId: string }) => {
           </div>
 
           <div className="mt-3 flex w-full justify-start">
-            <span className="me-2 mt-0.5 text-muted-light">
+            <span className="mt-0.5 text-muted-light me-2">
               <PhoneIcon width={16} />
             </span>
             <a href={`tel:${settings?.contact}`} className="text-sm text-body">
@@ -104,12 +99,12 @@ const MerchantDetails = ({ merchantId }: { merchantId: string }) => {
                 ? settings?.contact
                 : t('common:text-no-contact')}
             </a>
+          </div> */}
           </div>
         </div>
-      </div>
 
-      {/* Mini Dashboard */}
-      <div className="order-4 col-span-12 xl:order-3 xl:col-span-8">
+        {/* Mini Dashboard */}
+        {/* <div className="order-4 col-span-12 xl:order-3 xl:col-span-8">
         <div className="grid h-full grid-cols-1 gap-5 rounded bg-light p-4 md:grid-cols-3">
           <div className="space-y-3">
             <h2 className="text-lg font-semibold text-heading">
@@ -156,7 +151,7 @@ const MerchantDetails = ({ merchantId }: { merchantId: string }) => {
                 </div>
                 <div className="ms-3">
                   <p className="mb-0.5 text-lg font-semibold text-sub-heading">
-                    {/* {totalEarnings} */}
+                 
                   </p>
                   <p className="mt-0 text-sm text-muted">
                     {t('common:text-gross-sales')}
@@ -169,7 +164,7 @@ const MerchantDetails = ({ merchantId }: { merchantId: string }) => {
                 </div>
                 <div className="ms-3">
                   <p className="mb-0.5 text-lg font-semibold text-sub-heading">
-                    {/* {currentBalance} */}
+                
                   </p>
                   <p className="mt-0 text-sm text-muted">
                     {t('common:text-current-balance')}
@@ -190,7 +185,7 @@ const MerchantDetails = ({ merchantId }: { merchantId: string }) => {
                 </div>
                 <div className="ms-3">
                   <p className="mb-0.5 text-lg font-semibold text-sub-heading">
-                    {`${balance?.admin_commission_rate ?? 0} %` ?? 'Not Set'}
+                    {`${balance?.admin_commission_rate || 0} %` ?? 'Not Set'}
                   </p>
                   <p className="mt-0 text-sm text-muted">
                     {t('common:text-commission-rate')}
@@ -200,10 +195,10 @@ const MerchantDetails = ({ merchantId }: { merchantId: string }) => {
             </div>
           </div>
         </div>
-      </div>
+      </div> */}
 
-      {/* Misc. Information */}
-      <div className="order-3 col-span-12 rounded bg-light sm:col-span-6 xl:order-4 xl:col-span-3">
+        {/* Misc. Information */}
+        {/* <div className="order-3 col-span-12 rounded bg-light sm:col-span-6 xl:order-4 xl:col-span-3">
         <div className="flex flex-col border-b border-gray-200 p-6 2xl:p-7">
           <span className="mb-2 text-sm text-muted">
             {t('common:text-registered-since')}
@@ -252,9 +247,16 @@ const MerchantDetails = ({ merchantId }: { merchantId: string }) => {
             </p>
           </div>
         </div>
+      </div> */}
       </div>
     </div>
   );
 };
+MerchantDetails.Layout = Layout;
 
 export default MerchantDetails;
+export const getServerSideProps = async ({ locale }: any) => ({
+  props: {
+    ...(await serverSideTranslations(locale, ['table', 'common', 'form'])),
+  },
+});
