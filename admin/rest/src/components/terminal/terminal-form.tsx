@@ -84,8 +84,9 @@ export default function CreateTerminalForm({ initialValues }: IProps) {
       }),
     {
       onSuccess: (data) => {
-        if (data?.data?.code !== '000') {
-          toast.error(data?.data?.desc);
+        if (data?.data?.responseCode !== '000') {
+          toast.error(data?.data?.responseMessage);
+          // router.back
           return;
         }
         toast.success('Terminal created successfully');
@@ -119,6 +120,7 @@ export default function CreateTerminalForm({ initialValues }: IProps) {
       bank: values.bank?.id,
       terminalStatus: values.terminalStatus?.id,
       condition: values.condition?.id,
+      id: 0
     };
     saveTerminal(payload);
   };

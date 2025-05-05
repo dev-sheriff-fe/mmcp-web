@@ -90,14 +90,15 @@ const LinkTerminalModal = ({ open, onClose, data: propData }: LinkTerminalModalP
     (formData: FormValues) => {
       const payload = {
         terminalId: formData.terminalId,
-        merchantId: formData.merchantId?.id || formData.merchantId,
+        merchantCode: formData.merchantId?.id || formData.merchantId,
         serialNo: formData.terminalSerialNo,
-        locationName: formData.locationName,
+        sourceCode: "MMCP",
+        locationAddress: formData.locationName,
         businessName: formData.businessName, 
-        sourceCode: formData.sourceCode, 
+        // sourceCode: formData.sourceCode, 
         // virtualAccountNo: formData.virtualAccountNo,
         status: formData.status?.id || formData.status, 
-        tellers: formData.tellers?.id || formData.tellers, 
+        tellerId: formData.tellers?.id || formData.tellers, 
         branchCode: formData.branchCode?.id || formData.branchCode,
         requestReference: new Date().getTime(),
       };
@@ -203,14 +204,14 @@ const LinkTerminalModal = ({ open, onClose, data: propData }: LinkTerminalModalP
             error={t(errors.businessName?.message!)}
           />
 
-          <Input
+          {/* <Input
             label={t('form:input-label-source-code')}
             {...register('sourceCode', {
               required: `${t('form:error-source-code-required')}`,
             })}
             variant="outline"
             error={t(errors.sourceCode?.message!)}
-          />
+          /> */}
         </div>
 
         <div className='grid gap-5 grid-cols-1 md:grid-cols-2'>
