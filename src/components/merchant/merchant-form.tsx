@@ -20,7 +20,6 @@ import axiosInstance from '@/utils/fetch-function';
 import { useMutation } from 'react-query';
 import useGetLookup from '@/hooks/useGetLookup';
 
-
 const defaultValues = {
   merchantId: '',
   name: '',
@@ -53,7 +52,7 @@ const stateOptions = [
 const settlementTypeOptions = [
   { id: 'WALLET', name: 'Wallet' },
   { id: 'BANK_ACCOUNT', name: 'Bank Account' },
-  { id: 'NO_SETTLEMENT', name: 'No Settlement' }
+  { id: 'NO_SETTLEMENT', name: 'No Settlement' },
 ];
 
 const genderOptions = [
@@ -68,7 +67,6 @@ export default function CreateOrUpdateMerchantForm({ initialValues }: IProps) {
   // const stateOptions = useGetLookup('STATES');
   const businessTypeOptions = useGetLookup('BUSINESS_TYPE');
 
-  
   const {
     register,
     handleSubmit,
@@ -193,7 +191,6 @@ export default function CreateOrUpdateMerchantForm({ initialValues }: IProps) {
             {...register('firstName')}
             variant="outline"
             className="mb-5"
-            disabled={true}
           />
 
           <Input
@@ -201,8 +198,6 @@ export default function CreateOrUpdateMerchantForm({ initialValues }: IProps) {
             {...register('lastName')}
             variant="outline"
             className="mb-5"
-            disabled={true}
-
           />
 
           <Input
@@ -212,7 +207,7 @@ export default function CreateOrUpdateMerchantForm({ initialValues }: IProps) {
             className="mb-5"
           />
 
-          <div className="mb-5">
+          {/* <div className="mb-5">
             <Label>{t('form:input-label-gender')}</Label>
             <SelectInput
               name="gender"
@@ -223,7 +218,7 @@ export default function CreateOrUpdateMerchantForm({ initialValues }: IProps) {
               disabled={true}
 
             />
-          </div>
+          </div> */}
         </div>
 
         {/* Merchant Information */}
@@ -264,7 +259,6 @@ export default function CreateOrUpdateMerchantForm({ initialValues }: IProps) {
             {...register('registrationNo')}
             variant="outline"
             className="mb-5"
-            disabled={true}
           />
         </div>
 
@@ -343,7 +337,6 @@ export default function CreateOrUpdateMerchantForm({ initialValues }: IProps) {
             {...register('settlementAccount')}
             variant="outline"
             className="mb-5"
-            
           />
 
           <Input
@@ -351,8 +344,6 @@ export default function CreateOrUpdateMerchantForm({ initialValues }: IProps) {
             {...register('settlementAccountName')}
             variant="outline"
             className="mb-5"
-            disabled={true}
-
           />
 
           <Input
@@ -360,7 +351,6 @@ export default function CreateOrUpdateMerchantForm({ initialValues }: IProps) {
             {...register('terminalId')}
             variant="outline"
             className="mb-5"
-
           />
 
           <Input
