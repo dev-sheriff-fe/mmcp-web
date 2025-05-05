@@ -33,7 +33,11 @@ export default function MerchantsPage() {
   const [visible, setVisible] = useState(false);
   const [name, setName] = useState<string>('');
   const [code, setCode] = useState<string>('');
-  const { data, isLoading } = useQuery(
+  const {
+    data,
+    isLoading: loading,
+    error,
+  } = useQuery(
     'merchantsS',
     () =>
       axiosInstance.request({
@@ -64,23 +68,12 @@ export default function MerchantsPage() {
     total: data?.data?.totalCount,
     hasMorePages: data?.data?.totalPages > page,
   };
-  const { merchantClasses, loading, error } = useShippingClassesQuery({
-    name: searchTerm,
-    orderBy,
-    sortedBy,
-    language: locale,
-    limit: 20,
-    page,
-    code,
-    merchantName: name,
-  });
 
   const toggleVisible = () => {
     setVisible((v) => !v);
   };
 
   if (loading) return <Loader text={t('common:text-loading')} />;
-  if (error) return <ErrorMessage message={error.message} />;
 
   function handleSearch({ searchText }: { searchText: string }) {
     setSearch(searchText);
@@ -155,7 +148,7 @@ export default function MerchantsPage() {
       <MerchantList
         onOrder={setOrder}
         onSort={setColumn}
-        merchants={data?.data?.content ?? merchantClasses}
+        merchants={data?.data?.content ?? []}
       />
     </>
   );
