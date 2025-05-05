@@ -72,6 +72,7 @@ const MerchantDetails = () => {
                 alt={'image'}
               />
             </div>
+            <p>{query.id}</p>
 
             {/* {is_active ? (
               <div className="absolute bottom-4 h-5 w-5 overflow-hidden rounded-full bg-light end-2">
@@ -259,7 +260,7 @@ const MerchantDetails = () => {
         </div>
       </div> */}
       </div>
-
+      <h3>Terminal List</h3>
       <Table
         //@ts-ignore
         columns={generateReportColumn(data?.data)}
