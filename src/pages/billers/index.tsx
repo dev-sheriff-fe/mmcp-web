@@ -34,7 +34,7 @@ export default function BillersPage() {
   const [visible, setVisible] = useState(false);
   const [name, setName] = useState<string>('');
   const [code, setCode] = useState<string>('');
-  const { data, isLoading } = useQuery(
+  const { data, isLoading, error } = useQuery(
     'billers',
     () =>
       axiosInstance.request({
@@ -63,23 +63,12 @@ export default function BillersPage() {
     total: data?.data?.totalCount,
     hasMorePages: data?.data?.totalPages > page,
   };
-  const { merchantClasses, loading, error } = useShippingClassesQuery({
-    name: searchTerm,
-    orderBy,
-    sortedBy,
-    language: locale,
-    limit: 20,
-    page,
-    code,
-    merchantName: name,
-  });
 
   const toggleVisible = () => {
     setVisible((v) => !v);
   };
 
-  if (loading) return <Loader text={t('common:text-loading')} />;
-  if (error) return <ErrorMessage message={error.message} />;
+  if (isLoading) return <Loader text={t('common:text-loading')} />;
 
   function handleSearch({ searchText }: { searchText: string }) {
     setSearch(searchText);
@@ -153,17 +142,15 @@ export default function BillersPage() {
       <BillerList
         onOrder={setOrder}
         onSort={setColumn}
-        merchants={data?.data?.billers ?? merchantClasses}
+        merchants={data?.data?.billers ?? []}
       />
     </>
   );
 }
 
-
 BillersPage.authenticate = {
   permissions: adminOnly,
 };
-
 
 BillersPage.Layout = Layout;
 

@@ -43,10 +43,6 @@ export default function Dashboard() {
   //   error: popularProductError,
   // } = usePopularProductsQuery({ limit: 10, language: locale });
 
-  const { withdraws, loading: withdrawLoading } = useWithdrawsQuery({
-    limit: 10,
-  });
-
   let salesByYear: number[] = Array.from({ length: 12 }, (_) => 0);
   if (!!data?.totalYearSaleByMonth?.length) {
     salesByYear = data.totalYearSaleByMonth.map((item: any) =>
@@ -121,9 +117,9 @@ export default function Dashboard() {
         </div>
 
         <div className="w-full xl:w-1/2">
-          <WithdrawTable
-            withdraws={withdraws}
-            title={t('table:withdraw-table-title')}
+          <RecentOrders
+            orders={[]}
+            title={t('table:recent-order-table-title')}
           />
         </div>
       </div>

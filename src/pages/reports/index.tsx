@@ -35,27 +35,9 @@ export default function TerminalsPage() {
   const [isLinkModalOpen, setIsLinkModalOpen] = useState(false);
   const reportCodes = useGetLookup('REPORT_CODE');
 
-  const {
-    merchantClasses: terminals,
-    loading,
-    error,
-  } = useShippingClassesQuery({
-    name: searchTerm,
-    orderBy,
-    sortedBy,
-    language: locale,
-    limit: 20,
-    page,
-    status,
-    terminalId,
-  });
-
   const toggleVisible = () => {
     setVisible((v) => !v);
   };
-
-  if (loading) return <Loader text={t('common:text-loading')} />;
-  if (error) return <ErrorMessage message={error.message} />;
 
   function handleSearch({ searchText }: { searchText: string }) {
     setSearch(searchText);
@@ -88,14 +70,14 @@ export default function TerminalsPage() {
           <div className="flex w-full flex-col items-center space-y-4 ms-auto md:flex-row md:space-y-0 xl:w-1/2">
             <Search onSearch={handleSearch} />
 
-            <LinkButton
+            {/* <LinkButton
               href={`${Routes.report.create}`}
               className="h-12 w-full md:w-auto md:ms-6"
             >
               <span>
                 + {t('form:button-label-add')} {t('form:button-label-report')}
               </span>
-            </LinkButton>
+            </LinkButton> */}
 
             <button
               className="flex items-center whitespace-nowrap text-base font-semibold text-accent md:ms-5"

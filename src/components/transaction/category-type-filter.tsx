@@ -11,7 +11,10 @@ import Input from '@/components/ui/input';
 import { DatePicker } from '@/components/ui/date-picker';
 
 type Props = {
-  onTransactionTypeFilter: (newValue: any, actionMeta: ActionMeta<unknown>) => void;
+  onTransactionTypeFilter: (
+    newValue: any,
+    actionMeta: ActionMeta<unknown>
+  ) => void;
   onStatusFilter: (newValue: any, actionMeta: ActionMeta<unknown>) => void;
   onStartDateChange: (date: Date | null) => void;
   onEndDateChange: (date: Date | null) => void;
@@ -36,12 +39,6 @@ export default function CategoryTypeFilter({
   const { locale } = useRouter();
   const { t } = useTranslation();
 
-  const { types, loading } = useTypesQuery({ language: locale });
-  const { categories, loading: categoryLoading } = useCategoriesQuery({
-    limit: 999,
-    language: locale,
-  });
-
   const transactionTypes = [
     { value: 'purchase', label: t('common:purchase') },
     { value: 'refund', label: t('common:refund') },
@@ -56,8 +53,12 @@ export default function CategoryTypeFilter({
   ];
 
   return (
-    <div className={cn('grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4', className)}>
-      
+    <div
+      className={cn(
+        'grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4',
+        className
+      )}
+    >
       <div className="w-full">
         <Label>{t('common:transaction-type')}</Label>
         <Select
@@ -66,7 +67,7 @@ export default function CategoryTypeFilter({
           onChange={onTransactionTypeFilter}
         />
       </div>
-      
+
       <div className="w-full">
         <Label>{t('common:start-date')}</Label>
         <DatePicker
@@ -76,7 +77,7 @@ export default function CategoryTypeFilter({
           className="w-full"
         />
       </div>
-      
+
       <div className="w-full">
         <Label>{t('common:end-date')}</Label>
         <DatePicker
@@ -86,17 +87,17 @@ export default function CategoryTypeFilter({
           className="w-full"
         />
       </div>
-      
+
       <div className="w-full">
         <Label>{t('common:rrn')}</Label>
         <Input
-          name='rrn'
+          name="rrn"
           placeholder={t('common:enter-rrn')}
           onChange={onRrnFilter}
           className="w-full"
         />
       </div>
-      
+
       <div className="w-full">
         <Label>{t('common:status')}</Label>
         <Select
@@ -105,31 +106,31 @@ export default function CategoryTypeFilter({
           onChange={onStatusFilter}
         />
       </div>
-      
+
       <div className="w-full">
         <Label>{t('common:merchant-code')}</Label>
         <Input
-          name='merchantCode'
+          name="merchantCode"
           placeholder={t('common:enter-merchant-code')}
           onChange={onMerchantCodeFilter}
           className="w-full"
         />
       </div>
-      
+
       <div className="w-full">
         <Label>{t('common:name')}</Label>
         <Input
-          name='name'
+          name="name"
           placeholder={t('common:enter-name')}
           onChange={onNameFilter}
           className="w-full"
         />
       </div>
-      
+
       <div className="w-full">
         <Label>{t('common:terminal-id')}</Label>
         <Input
-          name='terminalId'
+          name="terminalId"
           placeholder={t('common:enter-terminal-id')}
           onChange={onTerminalIdFilter}
           className="w-full"

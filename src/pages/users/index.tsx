@@ -23,13 +23,6 @@ export default function Customers() {
   const [orderBy, setOrder] = useState('created_at');
   const [sortedBy, setColumn] = useState<SortOrder>(SortOrder.Desc);
 
-  const { users, paginatorInfo, loading, error } = useUsersQuery({
-    limit: 20,
-    page,
-    name: searchTerm,
-    orderBy,
-    sortedBy,
-  });
   const { data, isLoading } = useQuery(
     'users',
     () =>
@@ -62,8 +55,7 @@ export default function Customers() {
     hasMorePages: data?.data?.totalPages > page,
   };
 
-  if (isLoading || loading) return <Loader text={t('common:text-loading')} />;
-  if (error) return <ErrorMessage message={error.message} />;
+  if (isLoading) return <Loader text={t('common:text-loading')} />;
 
   function handleSearch({ searchText }: { searchText: string }) {
     setSearchTerm(searchText);
@@ -92,12 +84,10 @@ export default function Customers() {
         </div>
       </Card>
 
-      {loading ? null : (
+      {isLoading ? null : (
         <CustomerList
-          customers={data?.data?.userInfoList ?? users ?? []}
-          paginatorInfo={
-            newPaginatorInfo.total ? newPaginatorInfo : paginatorInfo
-          }
+          customers={data?.data?.userInfoList ?? []}
+          paginatorInfo={newPaginatorInfo}
           onPagination={handlePagination}
           onOrder={setOrder}
           onSort={setColumn}

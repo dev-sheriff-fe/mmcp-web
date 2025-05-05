@@ -25,12 +25,6 @@ export default function CategoryTypeFilter({
   const { locale } = useRouter();
   const { t } = useTranslation();
 
-  const { types, loading } = useTypesQuery({ language: locale });
-  const { categories, loading: categoryLoading } = useCategoriesQuery({
-    limit: 999,
-    language: locale,
-  });
-
   const statusOptions = [
     { value: 'success', label: t('common:success') },
     { value: 'failed', label: t('common:failed') },
@@ -38,12 +32,16 @@ export default function CategoryTypeFilter({
   ];
 
   return (
-    <div className={cn('grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4', className)}>
-      
+    <div
+      className={cn(
+        'grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4',
+        className
+      )}
+    >
       <div className="w-full">
         <Label>{t('common:terminal-id')}</Label>
         <Input
-          name='terminalId'
+          name="terminalId"
           placeholder={t('common:enter-terminal-id')}
           onChange={onTerminalIdFilter}
           className="w-full"
@@ -58,7 +56,6 @@ export default function CategoryTypeFilter({
           onChange={onStatusFilter}
         />
       </div>
-      
     </div>
   );
 }

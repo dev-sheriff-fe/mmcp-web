@@ -36,7 +36,7 @@ export default function TerminalsPage() {
   const [terminalId, setTerminalId] = useState<string>('');
   const [status, setStatus] = useState<string>('');
   const [isLinkModalOpen, setIsLinkModalOpen] = useState(false);
-  const { data, isLoading } = useQuery(
+  const { data, isLoading: loading } = useQuery(
     'terminals',
     () =>
       axiosInstance.request({
@@ -48,32 +48,17 @@ export default function TerminalsPage() {
           name: searchTerm,
           entityCode: 'ETZ',
           bankCode: '',
-          terminalId: terminalId
+          terminalId: terminalId,
         },
       }),
     {}
   );
-  const {
-    merchantClasses: terminals,
-    loading,
-    error,
-  } = useShippingClassesQuery({
-    name: searchTerm,
-    orderBy,
-    sortedBy,
-    language: locale,
-    limit: 20,
-    page,
-    status,
-    terminalId,
-  });
 
   const toggleVisible = () => {
     setVisible((v) => !v);
   };
 
   if (loading) return <Loader text={t('common:text-loading')} />;
-  if (error) return <ErrorMessage message={error.message} />;
 
   function handleSearch({ searchText }: { searchText: string }) {
     setSearch(searchText);
@@ -157,7 +142,7 @@ export default function TerminalsPage() {
       <TerminalList
         onOrder={setOrder}
         onSort={setColumn}
-        terminals={data?.data?.terminalList ?? terminals}
+        terminals={data?.data?.terminalList ?? []}
       />
 
       {/* Link Terminal Modal */}
