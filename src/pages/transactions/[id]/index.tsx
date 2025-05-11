@@ -14,8 +14,7 @@ import { ReactNode } from 'react';
 import { useQuery } from 'react-query';
 
 import axiosInstance from '@/utils/fetch-function';
-import { CheckMark } from '@/components/icons/checkmark';
-import { CloseFillIcon } from '@/components/icons/close-fill';
+
 import { OrderIcon } from '@/components/icons/order-icon';
 import { UserIcon } from '@/components/icons/user-icon';
 
