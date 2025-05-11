@@ -21,7 +21,7 @@ export const getStatusColor = (status: string) => {
     statusLower === 'successful'
   ) {
     return 'bg-green-500';
-  } else if (statusLower === 'inactive') {
+  } else if (statusLower === 'inactive' || statusLower === 'failed') {
     return 'bg-red-500';
   } else if (statusLower === 'pending') {
     return 'bg-yellow-500';
