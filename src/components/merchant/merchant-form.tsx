@@ -3,15 +3,10 @@ import { useForm, useWatch } from 'react-hook-form';
 import SelectInput from '@/components/ui/select-input';
 import Button from '@/components/ui/button';
 import Card from '@/components/common/card';
-import Description from '@/components/ui/description';
-import Radio from '@/components/ui/radio/radio';
+
 import Label from '@/components/ui/label';
-import { ShippingType, Shipping, MerchantInput } from '@/types';
-import {
-  useCreateShippingMutation,
-  useUpdateShippingMutation,
-} from '@/data/shipping';
-import { yupResolver } from '@hookform/resolvers/yup';
+import { Shipping, MerchantInput } from '@/types';
+
 import { useRouter } from 'next/router';
 import { useTranslation } from 'next-i18next';
 import FileInput from '@/components/ui/file-input';
@@ -60,27 +55,20 @@ const genderOptions = [
   { id: 'female', name: 'Female' },
 ];
 
-export default function CreateOrUpdateMerchantForm({ initialValues }: IProps) {
+export default function CreateOrUpdateMerchantForm({
+  initialValues,
+}: Readonly<IProps>) {
   const router = useRouter();
   const { t } = useTranslation();
   const bankOptions = useGetLookup('BANK');
   // const stateOptions = useGetLookup('STATES');
   const businessTypeOptions = useGetLookup('BUSINESS_TYPE');
 
-  const {
-    register,
-    handleSubmit,
-    control,
-    formState: { errors },
-  } = useForm<MerchantInput>({
+  const { register, handleSubmit, control, watch } = useForm<MerchantInput>({
     shouldUnregister: true,
     defaultValues: defaultValues,
   });
 
-  const { mutate: createShippingClass, isLoading: creating } =
-    useCreateShippingMutation();
-  const { mutate: updateShippingClass, isLoading: updating } =
-    useUpdateShippingMutation();
   const { mutate: saveMerchant, isLoading: ismerchantLoading } = useMutation(
     (formData: any) =>
       axiosInstance.request({
@@ -166,8 +154,8 @@ export default function CreateOrUpdateMerchantForm({ initialValues }: IProps) {
     };
     saveMerchant(payload);
   };
-
-  const type = useWatch({ name: 'type', control });
+  const businessLogo = watch('businessLogo');
+  console.log(businessLogo);
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -177,7 +165,7 @@ export default function CreateOrUpdateMerchantForm({ initialValues }: IProps) {
           details={t('form:merchant-form-info-help-text')}
           className="w-full px-0 pb-5 sm:w-4/12 sm:py-8 sm:pe-4 md:w-1/3 md:pe-5"
         /> */}
-      <Card className="w-full sm:w-8/12 md:w-2/3">
+      <Card className="w-full">
         {/* Personal Information */}
         <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
           <div className="mt-2 pt-5 md:col-span-2">
@@ -369,25 +357,24 @@ export default function CreateOrUpdateMerchantForm({ initialValues }: IProps) {
             multiple={false}
           />
         </div>
+        <div className="mb-4 text-end">
+          {initialValues && (
+            <Button
+              variant="outline"
+              onClick={router.back}
+              className="me-4"
+              type="button"
+            >
+              {t('form:button-label-back')}
+            </Button>
+          )}
+
+          <Button loading={ismerchantLoading} disabled={ismerchantLoading}>
+            {t('form:button-label-add-merchant')}
+          </Button>
+        </div>
       </Card>
       {/* </div> */}
-
-      <div className="mb-4 text-end">
-        {initialValues && (
-          <Button
-            variant="outline"
-            onClick={router.back}
-            className="me-4"
-            type="button"
-          >
-            {t('form:button-label-back')}
-          </Button>
-        )}
-
-        <Button loading={creating || updating} disabled={creating || updating}>
-          {t('form:button-label-add-merchant')}
-        </Button>
-      </div>
     </form>
   );
 }

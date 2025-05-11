@@ -11,3 +11,19 @@ export const mapPaginatorData = (
     hasMorePages: formattedValues.lastPage !== formattedValues.currentPage,
   };
 };
+export const getStatusColor = (status: string) => {
+  const statusLower = status.toLowerCase();
+  if (
+    statusLower === 'active' ||
+    statusLower === 'approved' ||
+    statusLower === 'success' ||
+    statusLower === 'completed' ||
+    statusLower === 'successful'
+  ) {
+    return 'bg-green-500';
+  } else if (statusLower === 'inactive') {
+    return 'bg-red-500';
+  } else if (statusLower === 'pending') {
+    return 'bg-yellow-500';
+  }
+};

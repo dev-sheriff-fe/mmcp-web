@@ -24,14 +24,14 @@ export default function Customers() {
   const [sortedBy, setColumn] = useState<SortOrder>(SortOrder.Desc);
 
   const { data, isLoading } = useQuery(
-    'users',
+    ['users', page],
     () =>
       axiosInstance.request({
         method: 'GET',
         url: '/usermanager/getUserMasterList',
         params: {
           pageNumber: page,
-          pageSize: 20,
+          pageSize: 10,
           name: searchTerm,
           role: '',
           mobileNo: '',
@@ -48,7 +48,7 @@ export default function Customers() {
     links: [],
     nextPageUrl: null,
     path: '',
-    perPage: 20,
+    perPage: 10,
     prevPageUrl: null,
     to: 10,
     total: data?.data?.totalCount,

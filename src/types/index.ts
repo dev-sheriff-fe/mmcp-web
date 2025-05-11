@@ -957,7 +957,6 @@ export interface Terminal {
   updatedBy?: string;
 }
 
-
 export interface Collection {
   id: number;
   fieldID: string;
@@ -1407,3 +1406,132 @@ export interface ManufacturerPaginator extends PaginatorInfo<Manufacturer> {}
 export interface OrderStatusPaginator extends PaginatorInfo<OrderStatus> {}
 
 export interface WithdrawPaginator extends PaginatorInfo<Withdraw> {}
+export interface MerchantDetails {
+  terminalDtoList: TerminalDtoList[];
+  merchantDto: MerchantDto;
+}
+
+export interface MerchantDto {
+  entityCode: string;
+  firstname: null;
+  lastname: null;
+  username: string;
+  middlename: null;
+  businessName: string;
+  businessType: string;
+  email: string;
+  mobileNo: string;
+  accountType: null;
+  address: string;
+  city: string;
+  countryCode: string;
+  bvn: null;
+  businessRegNo: string;
+  photoLink: null;
+  identityLink: null;
+  otherDocLink: null;
+  dob: null;
+  gender: null;
+  geolocation: null;
+  identityNo: null;
+  identityType: null;
+  issueDate: null;
+  expiryDate: null;
+  branchCode: string;
+  state: null;
+  lga: null;
+  agentManager: null;
+  merchantNibssId: null;
+  settlementType: string;
+  bankAccountNo: string;
+  bankAccountName: string;
+  bankCode: string;
+  bankName: string;
+  sweepSessions: null;
+  businessLogo: null;
+  accountOfficer: null;
+  accountNo: string;
+  status: string;
+  createdDate: string;
+  fullname: null;
+  merchantId: string;
+  terminalId: null;
+  serialNo: null;
+  modifiedBy: null;
+  modifiedDate: null;
+  merchantServiceCharge: null;
+  transferFee: null;
+  mscCapLimit: number;
+  merchantGroupCode: null;
+  merchantFooter: null;
+  paymentMethodAllowed: null;
+  merchantCollectionAccount: null;
+}
+
+export interface TerminalDtoList {
+  terminalId: string;
+  walletId: string;
+  status: string;
+  createdDate: string;
+  balance: number;
+  tellerId: string;
+  tellerName: string;
+  walletName: string;
+  branchCode: string;
+  virtualAccountNo: string;
+  ccy: string;
+  serialNo: string;
+}
+export interface ITransactionDetails {
+  tranRefNo: string;
+  sourceAccount: string;
+  accountNo: string;
+  senderName: string;
+  senderMobile: string;
+  sendBankCode: null;
+  sendBankName: null;
+  beneficiaryName: string;
+  beneficiaryMobile: string;
+  beneficiaryBankCode: string;
+  beneficiaryAccount: string;
+  tranCode: string;
+  deviceId: null;
+  tranType: string;
+  amount: number;
+  charge: number;
+  currencyCode: string;
+  tranDate: string;
+  narration: string;
+  paymentMethod: string;
+  terminalId: string;
+  responseCode: string;
+  responseMessage: string;
+  paymentRefNo: string;
+  externalRefNo: string;
+  rrn: string;
+  stan: string;
+  cardNo: string;
+  agentCommission: number;
+  networkCommission: number;
+  bankCommission: number;
+  serviceProviderCommission: number;
+  platformCommission: number;
+  aggregatorCommission: number;
+  id: number;
+  status: string;
+  createdBy: string;
+  createdDate: string;
+  crDr: string;
+  paymentResponseCode: string;
+  paymentResponseMessage: string;
+  provider: string;
+  oldRef: string;
+  sessionId: string;
+  bankName: string;
+  token: null;
+  otherCommission: null;
+  customerId: null;
+  accountName: null;
+  collectionTeller: null;
+  customerRefNo: null;
+}
