@@ -56,7 +56,7 @@ export default function Dashboard() {
           <StickerCard
             titleTransKey="Total Transactions"
             // subtitleTransKey="sticker-card-subtitle-rev"
-            icon={<DollarIcon className="h-7 w-7" color="#047857" />}
+            icon={<DollarIcon className="h-5 w-5" color="#047857" />}
             iconBgStyle={{ backgroundColor: '#A7F3D0' }}
             price={total_revenue}
           />
@@ -79,7 +79,7 @@ export default function Dashboard() {
         <div className="w-full ">
           <StickerCard
             titleTransKey="Total Merchants"
-            icon={<ShopIcon className="w-6" color="#1D4ED8" />}
+            icon={<ShopIcon className="w-5" color="#1D4ED8" />}
             iconBgStyle={{ backgroundColor: '#93C5FD' }}
             price={data?.totalMerchants}
           />
@@ -88,7 +88,7 @@ export default function Dashboard() {
 
       <div className="mb-6 flex w-full flex-wrap md:flex-nowrap">
         <ColumnChart
-          widgetTitle={t('common:sale-history')}
+          widgetTitle={t('Transaction History')}
           colors={['#007ee6']}
           series={salesByYear}
           categories={[

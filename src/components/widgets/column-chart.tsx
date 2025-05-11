@@ -83,7 +83,7 @@ const BarChart = ({
   return (
     <div className="h-full w-full rounded bg-light shadow-sm">
       <div className="flex items-center justify-between p-8">
-        <h3 className="text-sm text-heading">{widgetTitle}</h3>
+        <h3 className="text-lg font-medium text-heading">{widgetTitle}</h3>
 
         <div className="flex flex-col">
           <span className="text-lg font-semibold text-green-500">
@@ -102,7 +102,7 @@ const BarChart = ({
                 <ArrowDown />
               </span>
             )}
-            <span className="ms-1 text-sm text-heading">
+            <span className="text-sm text-heading ms-1">
               <span
                 className={cn(
                   position === 'down' ? 'text-red-400' : 'text-green-500'
