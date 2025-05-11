@@ -42,8 +42,9 @@ export default function Uploader({
                 mergedData = files.concat(data);
                 setFiles(files.concat(data));
               } else {
-                mergedData = data[0];
-                setFiles(data);
+                mergedData = data.data[0]?.refNo;
+                const imgData = data.data;
+                setFiles([imgData]);
               }
               if (onChange) {
                 onChange(mergedData);
@@ -88,9 +89,9 @@ export default function Uploader({
       'raw',
     ];
     // let filename, fileType, isImage;
-    if (file.id) {
+    if (file.refNo) {
       // if (!file?.thumbnail) {
-      const splitArray = file?.original?.split('/');
+      const splitArray = file?.refNo?.split('/');
       let fileSplitName = splitArray[splitArray?.length - 1]?.split('.'); // it will create an array of words of filename
 
       // filename = splitArray[splitArray?.length - 1];
@@ -122,7 +123,7 @@ export default function Uploader({
             // </div>
             <figure className="relative h-16 w-28">
               <Image
-                src={file.thumbnail}
+                src={file.refNo}
                 alt={filename}
                 layout="fill"
                 objectFit="contain"
@@ -168,7 +169,7 @@ export default function Uploader({
       setError(null);
 
       // Make sure to revoke the data uris to avoid memory leaks
-      files.forEach((file: any) => URL.revokeObjectURL(file.thumbnail));
+      files.forEach((file: any) => URL.revokeObjectURL(file.refNo));
     },
     [files]
   );

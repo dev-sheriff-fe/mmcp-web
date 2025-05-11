@@ -22,9 +22,6 @@ import { useQuery } from 'react-query';
 
 export default function MerchantsPage() {
   const { t } = useTranslation();
-  const router = useRouter();
-  const { id } = router.query;
-  const locale = router.locale;
 
   const [searchTerm, setSearch] = useState('');
   const [orderBy, setOrder] = useState('created_at');
@@ -36,16 +33,17 @@ export default function MerchantsPage() {
   const {
     data,
     isLoading: loading,
+    isFetching,
     error,
   } = useQuery(
-    'merchantsS',
+    ['merchants', page],
     () =>
       axiosInstance.request({
         method: 'GET',
         url: '/merchant/all',
         params: {
           pageNumber: page,
-          pageSize: 20,
+          pageSize: 10,
           name: searchTerm,
           role: '',
           mobileNo: '',
@@ -62,7 +60,7 @@ export default function MerchantsPage() {
     links: [],
     nextPageUrl: null,
     path: '',
-    perPage: 20,
+    perPage: 10,
     prevPageUrl: null,
     to: 10,
     total: data?.data?.totalCount,
@@ -146,9 +144,12 @@ export default function MerchantsPage() {
       </Card>
 
       <MerchantList
+        isFetching={isFetching}
         onOrder={setOrder}
         onSort={setColumn}
         merchants={data?.data?.content ?? []}
+        paginatorInfo={newPaginatorInfo}
+        onPagination={handlePagination}
       />
     </>
   );

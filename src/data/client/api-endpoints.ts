@@ -1,5 +1,5 @@
 export const API_ENDPOINTS = {
-  ATTACHMENTS: 'attachments',
+  ATTACHMENTS: 'fileuploadservice/uploadfile',
   ANALYTICS: 'analytics',
   NEW_ANALYTICS: '/dashboard/summarySale',
   ATTRIBUTES: 'attributes',

@@ -1,19 +1,25 @@
 import { Table } from '@/components/ui/table';
 import ActionButtons from '@/components/common/action-buttons';
 import { Routes } from '@/config/routes';
-import { Merchant, SortOrder } from '@/types';
+import Pagination from '@/components/ui/pagination';
+import { SortOrder } from '@/types';
 import { useTranslation } from 'next-i18next';
 import { useIsRTL } from '@/utils/locals';
 import { useState } from 'react';
 import TitleWithSort from '@/components/ui/title-with-sort';
+import { IProps } from '../transaction/transaction-list';
+import Badge from '../ui/badge/badge';
+import { get } from 'lodash';
+import { getStatusColor } from '@/utils/data-mappers';
 
-export type IProps = {
-  merchants: Merchant[] | undefined;
-  onSort: (current: any) => void;
-  onOrder: (current: string) => void;
-};
-
-const MerchantList = ({ merchants, onSort, onOrder }: IProps) => {
+const MerchantList = ({
+  merchants,
+  onSort,
+  onOrder,
+  paginatorInfo,
+  onPagination,
+  isFetching,
+}: IProps) => {
   const { t } = useTranslation();
   const { alignLeft } = useIsRTL();
 
@@ -122,7 +128,7 @@ const MerchantList = ({ merchants, onSort, onOrder }: IProps) => {
       align: 'center',
       width: 100,
       render: (status: string) => (
-        <span className="capitalize">{status?.toLowerCase()}</span>
+        <Badge text={status} color={getStatusColor(status)} />
       ),
     },
     {
@@ -143,16 +149,28 @@ const MerchantList = ({ merchants, onSort, onOrder }: IProps) => {
   ];
 
   return (
-    <div className="mb-8 overflow-hidden rounded shadow">
-      <Table
-        //@ts-ignore
-        columns={columns}
-        emptyText={t('table:empty-table-data')}
-        data={merchants}
-        rowKey="id"
-        scroll={{ x: 900 }}
-      />
-    </div>
+    <>
+      <div className="mb-8 overflow-hidden rounded shadow">
+        <Table
+          //@ts-ignore
+          columns={columns}
+          emptyText={t('table:empty-table-data')}
+          data={merchants}
+          rowKey="id"
+          scroll={{ x: 900 }}
+        />
+      </div>
+      {!!paginatorInfo?.total && (
+        <div className="flex items-center justify-end">
+          <Pagination
+            total={paginatorInfo.total}
+            current={paginatorInfo.currentPage}
+            pageSize={paginatorInfo.perPage}
+            onChange={onPagination}
+          />
+        </div>
+      )}
+    </>
   );
 };
 

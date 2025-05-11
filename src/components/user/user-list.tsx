@@ -1,16 +1,6 @@
 import Pagination from '@/components/ui/pagination';
-import Image from 'next/image';
 import { Table } from '@/components/ui/table';
-import ActionButtons from '@/components/common/action-buttons';
-import { siteSettings } from '@/settings/site.settings';
-import {
-  Category,
-  MappedPaginatorInfo,
-  SortOrder,
-  User,
-  UserPaginator,
-} from '@/types';
-import { useMeQuery } from '@/data/user';
+import { MappedPaginatorInfo, SortOrder, User } from '@/types';
 import { useTranslation } from 'next-i18next';
 import { useIsRTL } from '@/utils/locals';
 import { useState } from 'react';
@@ -132,7 +122,7 @@ const CustomerList = ({
       render: (status: string) => (
         <Badge
           text={status ? t('common:active') : t('common:inactive')}
-          color={status ? 'bg-accent' : 'bg-red-500'}
+          color={status ? 'bg-green-400' : 'bg-red-500'}
         />
       ),
     },

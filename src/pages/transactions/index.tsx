@@ -3,75 +3,114 @@ import Card from '@/components/common/card';
 import Layout from '@/components/layouts/admin';
 import TransactionList from '@/components/transaction/transaction-list';
 import Search from '@/components/common/search';
-import LinkButton from '@/components/ui/link-button';
 import ErrorMessage from '@/components/ui/error-message';
 import Loader from '@/components/ui/loader/loader';
 import { useTranslation } from 'next-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
-import { Routes } from '@/config/routes';
 import { SortOrder } from '@/types';
 import { adminOnly } from '@/utils/auth-utils';
-import { useRouter } from 'next/router';
 import CategoryTypeFilter from '@/components/transaction/category-type-filter';
 import cn from 'classnames';
 import { ArrowDown } from '@/components/icons/arrow-down';
 import { ArrowUp } from '@/components/icons/arrow-up';
-import { useShippingClassesQuery } from '@/data/merchant';
 import axiosInstance from '@/utils/fetch-function';
 import { useQuery } from 'react-query';
-
+import { ActionMeta } from 'react-select';
+export interface TranFilterType {
+  transactionType: string;
+  status: string;
+  startDate: Date | null;
+  endDate: Date | null;
+  rrn: string;
+  merchantCode: string;
+  name: string;
+  terminalId: string;
+}
 export default function TransactionsPage() {
   const { t } = useTranslation();
-  const router = useRouter();
-  const { id } = router.query;
-  const locale = router.locale;
 
   const [searchTerm, setSearchTerm] = useState('');
   const [orderBy, setOrder] = useState('created_at');
   const [sortedBy, setColumn] = useState<SortOrder>(SortOrder.Desc);
   const [page, setPage] = useState(1);
   const [visible, setVisible] = useState(false);
-  const [transactionType, setTransactionType] = useState<string>('');
-  const [status, setStatus] = useState<string>('');
-  const [startDate, setStartDate] = useState<Date | null>(null);
-  const [endDate, setEndDate] = useState<Date | null>(null);
-  const [rrn, setRrn] = useState<string>('');
-  const [merchantCode, setMerchantCode] = useState<string>('');
-  const [name, setName] = useState<string>('');
-  const [terminalId, setTerminalId] = useState<string>('');
+
+  const [transFilter, setTransFilter] = useState({
+    transactionType: '',
+    status: '',
+    startDate: null,
+
+    endDate: null,
+    rrn: '',
+    merchantCode: '',
+    name: '',
+    terminalId: '',
+  });
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setTransFilter((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+  const handleSelectChange = (
+    selectedOption: any,
+    actionMeta: ActionMeta<unknown>
+  ) => {
+    const name = actionMeta.name as string;
+    setTransFilter((prev) => ({
+      ...prev,
+      [name]: selectedOption?.value ?? '',
+    }));
+  };
+  const handleDateChange = (date: Date | null, name: string) => {
+    setTransFilter((prev) => ({
+      ...prev,
+      [name]: date,
+    }));
+  };
+  const [applyFilter, setApplyFilter] = useState(false);
+  const handleSubmit: () => void = () => {
+    setApplyFilter((prev) => !prev);
+    setPage(1);
+  };
   const getFirstDayOfYear = () => {
     const year = new Date().getFullYear();
     return `01-01-${year}`;
   };
-  
+
   const formatDate = (date: Date) => {
     const day = String(date.getDate()).padStart(2, '0');
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const year = date.getFullYear();
     return `${day}-${month}-${year}`;
   };
-  
+
   const today = formatDate(new Date());
   const firstDayOfYear = getFirstDayOfYear();
-  
-  const { error, data, isLoading } = useQuery(
-    ['transactions', page, searchTerm, transactionType, status, startDate, endDate, rrn, merchantCode, name, terminalId],
+
+  const { error, data, isLoading, isFetching } = useQuery(
+    ['transactions', page, applyFilter],
     () =>
       axiosInstance.request({
         method: 'GET',
         url: 'transactionmanager/tranmasterlist',
         params: {
-          startDate: startDate ? formatDate(startDate) : firstDayOfYear,
-          endDate: endDate ? formatDate(endDate) : today,
+          startDate: transFilter?.startDate
+            ? formatDate(transFilter?.startDate)
+            : firstDayOfYear,
+          endDate: transFilter?.endDate
+            ? formatDate(transFilter?.endDate)
+            : today,
           pageNumber: page,
-          pageSize: 100,
+          pageSize: 10,
           searchFilter: searchTerm,
-          rrn: rrn || undefined,
-          terminalId: terminalId || undefined,
-          status: status || undefined,
-          tranCode: transactionType || undefined,
-          name: name || undefined,
-          merchantCode: merchantCode || undefined,
+          rrn: transFilter.rrn || undefined,
+          terminalId: transFilter.terminalId || undefined,
+          status: transFilter.status || undefined,
+          tranCode: transFilter.transactionType || undefined,
+          name: transFilter.name || undefined,
+          merchantCode: transFilter.merchantCode || undefined,
         },
       }),
     {
@@ -88,7 +127,7 @@ export default function TransactionsPage() {
     links: [],
     nextPageUrl: null,
     path: '',
-    perPage: 20,
+    perPage: 10,
     prevPageUrl: null,
     to: 10,
     total: data?.data?.totalCount,
@@ -109,47 +148,12 @@ export default function TransactionsPage() {
   }
 
   if (isLoading) return <Loader text={t('common:text-loading')} />;
-  if (error) return <ErrorMessage message={(error as any)?.message || t('common:text-error')} />;
-
-  const handleTransactionTypeFilter = (selectedOption: any) => {
-    setPage(1);
-    setTransactionType(selectedOption?.value || null);
-  };
-
-  const handleStatusFilter = (selectedOption: any) => {
-    setPage(1);
-    setStatus(selectedOption?.value || null);
-  };
-
-  const handleStartDateChange = (date: Date | null) => {
-    setPage(1);
-    setStartDate(date);
-  };
-
-  const handleEndDateChange = (date: Date | null) => {
-    setPage(1);
-    setEndDate(date);
-  };
-
-  const handleRrnFilter = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setPage(1);
-    setRrn(e.target.value);
-  };
-
-  const handleMerchantCodeFilter = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setPage(1);
-    setMerchantCode(e.target.value);
-  };
-
-  const handleNameFilter = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setPage(1);
-    setName(e.target.value);
-  };
-
-  const handleTerminalIdFilter = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setPage(1);
-    setTerminalId(e.target.value);
-  };
+  if (error)
+    return (
+      <ErrorMessage
+        message={(error as any)?.message ?? t('common:text-error')}
+      />
+    );
 
   return (
     <>
@@ -185,24 +189,24 @@ export default function TransactionsPage() {
           })}
         >
           <div className="mt-5 flex w-full flex-col border-t border-gray-200 pt-5 md:mt-8 md:flex-row md:items-center md:pt-8">
-          <CategoryTypeFilter
-            onTransactionTypeFilter={handleTransactionTypeFilter}
-            onStatusFilter={handleStatusFilter}
-            onStartDateChange={handleStartDateChange}
-            onEndDateChange={handleEndDateChange}
-            onRrnFilter={handleRrnFilter}
-            onMerchantCodeFilter={handleMerchantCodeFilter}
-            onNameFilter={handleNameFilter}
-            onTerminalIdFilter={handleTerminalIdFilter}
-          />
+            <CategoryTypeFilter
+              handleChange={handleChange}
+              handleSelectChange={handleSelectChange}
+              handleDateChange={handleDateChange}
+              handleSubmit={handleSubmit}
+              tranFilter={transFilter}
+            />
           </div>
         </div>
       </Card>
 
       <TransactionList
+        isFetching={isFetching}
         merchants={data?.data?.transactions ?? []}
         onOrder={setOrder}
         onSort={setColumn}
+        paginatorInfo={newPaginatorInfo}
+        onPagination={handlePagination}
       />
     </>
   );

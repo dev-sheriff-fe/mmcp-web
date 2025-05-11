@@ -3,40 +3,34 @@ import React from 'react';
 import { useTranslation } from 'next-i18next';
 import Label from '@/components/ui/label';
 import cn from 'classnames';
-import { useCategoriesQuery } from '@/data/category';
-import { useRouter } from 'next/router';
-import { useTypesQuery } from '@/data/type';
+
 import { ActionMeta } from 'react-select';
 import Input from '@/components/ui/input';
 import { DatePicker } from '@/components/ui/date-picker';
+import Button from '../ui/button';
+import { TranFilterType } from '@/pages/transactions';
 
 type Props = {
-  onTransactionTypeFilter: (
-    newValue: any,
+  handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  handleSelectChange: (
+    selectedOption: any,
     actionMeta: ActionMeta<unknown>
   ) => void;
-  onStatusFilter: (newValue: any, actionMeta: ActionMeta<unknown>) => void;
-  onStartDateChange: (date: Date | null) => void;
-  onEndDateChange: (date: Date | null) => void;
-  onRrnFilter: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  onMerchantCodeFilter: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  onNameFilter: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  onTerminalIdFilter: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  handleDateChange: (date: Date | null, name: string) => void;
+  handleSubmit: () => void;
+  tranFilter: TranFilterType;
+
   className?: string;
 };
 
 export default function CategoryTypeFilter({
-  onTransactionTypeFilter,
-  onStatusFilter,
-  onStartDateChange,
-  onEndDateChange,
-  onRrnFilter,
-  onMerchantCodeFilter,
-  onNameFilter,
-  onTerminalIdFilter,
   className,
-}: Props) {
-  const { locale } = useRouter();
+  handleChange,
+  handleSelectChange,
+  handleDateChange,
+  handleSubmit,
+  tranFilter,
+}: Readonly<Props>) {
   const { t } = useTranslation();
 
   const transactionTypes = [
@@ -55,24 +49,26 @@ export default function CategoryTypeFilter({
   return (
     <div
       className={cn(
-        'grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4',
+        'grid w-full grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4',
         className
       )}
     >
       <div className="w-full">
         <Label>{t('common:transaction-type')}</Label>
         <Select
+          name="transactionType"
           options={transactionTypes}
           placeholder={t('common:select-transaction-type')}
-          onChange={onTransactionTypeFilter}
+          onChange={handleSelectChange}
+          value={tranFilter.transactionType}
         />
       </div>
 
       <div className="w-full">
         <Label>{t('common:start-date')}</Label>
         <DatePicker
-          selected={null}
-          onChange={onStartDateChange}
+          selected={tranFilter.startDate}
+          onChange={(date) => handleDateChange(date, 'startDate')}
           placeholderText={t('common:select-start-date')}
           className="w-full"
         />
@@ -81,8 +77,8 @@ export default function CategoryTypeFilter({
       <div className="w-full">
         <Label>{t('common:end-date')}</Label>
         <DatePicker
-          selected={null}
-          onChange={onEndDateChange}
+          selected={tranFilter.endDate}
+          onChange={(date) => handleDateChange(date, 'endDate')}
           placeholderText={t('common:select-end-date')}
           className="w-full"
         />
@@ -93,7 +89,8 @@ export default function CategoryTypeFilter({
         <Input
           name="rrn"
           placeholder={t('common:enter-rrn')}
-          onChange={onRrnFilter}
+          onChange={handleChange}
+          value={tranFilter.rrn}
           className="w-full"
         />
       </div>
@@ -103,7 +100,9 @@ export default function CategoryTypeFilter({
         <Select
           options={statusOptions}
           placeholder={t('common:select-status')}
-          onChange={onStatusFilter}
+          value={tranFilter.status}
+          onChange={handleSelectChange}
+          name="status"
         />
       </div>
 
@@ -112,7 +111,8 @@ export default function CategoryTypeFilter({
         <Input
           name="merchantCode"
           placeholder={t('common:enter-merchant-code')}
-          onChange={onMerchantCodeFilter}
+          onChange={handleChange}
+          value={tranFilter.merchantCode}
           className="w-full"
         />
       </div>
@@ -122,7 +122,8 @@ export default function CategoryTypeFilter({
         <Input
           name="name"
           placeholder={t('common:enter-name')}
-          onChange={onNameFilter}
+          value={tranFilter.name}
+          onChange={handleChange}
           className="w-full"
         />
       </div>
@@ -132,10 +133,12 @@ export default function CategoryTypeFilter({
         <Input
           name="terminalId"
           placeholder={t('common:enter-terminal-id')}
-          onChange={onTerminalIdFilter}
+          value={tranFilter.terminalId}
+          onChange={handleChange}
           className="w-full"
         />
       </div>
+      <Button onClick={handleSubmit}>Submit</Button>
     </div>
   );
 }

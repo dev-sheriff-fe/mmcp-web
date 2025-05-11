@@ -1,19 +1,33 @@
 import { Table } from '@/components/ui/table';
 import ActionButtons from '@/components/common/action-buttons';
 import { Routes } from '@/config/routes';
-import { Merchant, SortOrder } from '@/types';
+import { MappedPaginatorInfo, Merchant, SortOrder } from '@/types';
 import { useTranslation } from 'next-i18next';
 import { useIsRTL } from '@/utils/locals';
 import { useState } from 'react';
-import TitleWithSort from '@/components/ui/title-with-sort';
+import Pagination from '@/components/ui/pagination';
+import Badge from '../ui/badge/badge';
+import { formatPrice } from '@/utils/use-price';
+import Loader from '../ui/loader/loader';
+import { getStatusColor } from '@/utils/data-mappers';
 
 export type IProps = {
   merchants: Merchant[] | undefined;
   onSort: (current: any) => void;
   onOrder: (current: string) => void;
+  onPagination: (current: number) => void;
+  paginatorInfo: MappedPaginatorInfo | null;
+  isFetching?: boolean;
 };
 
-const TransactionList = ({ merchants, onSort, onOrder }: IProps) => {
+const TransactionList = ({
+  merchants,
+  onSort,
+  onOrder,
+  paginatorInfo,
+  onPagination,
+  isFetching,
+}: IProps) => {
   const { t } = useTranslation();
   const { alignLeft } = useIsRTL();
 
@@ -43,32 +57,31 @@ const TransactionList = ({ merchants, onSort, onOrder }: IProps) => {
   const columns = [
     {
       title: t('table:table-item-transaction-serial-no'),
-      dataIndex: 'TransactionSN',
-      key: 'TransactionSN',
+      dataIndex: 'id',
+      key: 'id',
       align: 'center',
       width: 50,
-      render: (text: string, record: any, index: number) => index + 1,
     },
     {
       title: t('table:table-item-transaction-ref'),
       dataIndex: 'tranRefNo',
       key: 'transactionRef',
       align: alignLeft,
-      width: 80,
+      width: 180,
     },
     {
       title: t('table:table-item-posted-date'),
       dataIndex: 'createdDate',
       key: 'postedDate',
-      align: 'center',
-      width: 80,
+      align: alignLeft,
+      width: 180,
     },
     {
       title: t('table:table-item-transaction-type'),
-      dataIndex: 'id',
-      key: 'TransactionType',
-      align: 'center',
-      width: 80,
+      dataIndex: 'tranType',
+      key: 'tranType',
+      align: alignLeft,
+      width: 150,
     },
     {
       title: t('table:table-item-amount'),
@@ -76,35 +89,31 @@ const TransactionList = ({ merchants, onSort, onOrder }: IProps) => {
       key: 'amount',
       align: alignLeft,
       width: 80,
+      render: (amount: number) =>
+        formatPrice({ amount, currencyCode: 'NGN', locale: 'en-NG' }),
     },
-    // {
-    //   title: t('table:table-item-wallet-id'),
-    //   dataIndex: 'name',
-    //   key: 'walletID',
-    //   align: alignLeft,
-    //   width: 80,
-    // },
+
     {
       title: t('table:table-item-terminal-id'),
       dataIndex: 'terminalId',
       key: 'terminalID',
-      align: 'center',
+      align: alignLeft,
       width: 80,
     },
-    {
-      title: t('table:table-item-rrn'),
-      dataIndex: 'rrn',
-      key: 'rrn',
-      align: 'center',
-      width: 80,
-    },
-    {
-      title: t('table:table-item-stan'),
-      dataIndex: 'stan',
-      key: 'stan',
-      align: 'center',
-      width: 80,
-    },
+    // {
+    //   title: t('table:table-item-rrn'),
+    //   dataIndex: 'rrn',
+    //   key: 'rrn',
+    //   align: 'center',
+    //   width: 80,
+    // },
+    // {
+    //   title: t('table:table-item-stan'),
+    //   dataIndex: 'stan',
+    //   key: 'stan',
+    //   align: 'center',
+    //   width: 80,
+    // },
     //     {
     //   title: t('table:table-item-wallet-id'),
     //   dataIndex: 'name',
@@ -116,7 +125,7 @@ const TransactionList = ({ merchants, onSort, onOrder }: IProps) => {
       title: t('table:table-item-posted-by'),
       dataIndex: 'createdBy',
       key: 'postedBy',
-      align: "center",
+      align: alignLeft,
       width: 80,
     },
     {
@@ -126,37 +135,52 @@ const TransactionList = ({ merchants, onSort, onOrder }: IProps) => {
       align: 'center',
       width: 80,
       render: (status: string) => (
-        <span className="capitalize">{status?.toLowerCase()}</span>
+        <Badge text={status} color={getStatusColor(status)} />
       ),
     },
     {
       title: t('table:table-item-actions'),
-      dataIndex: 'id',
+      dataIndex: 'tranRefNo',
       key: 'actions',
       align: 'center',
       width: 50,
-      render: (id: string, { slug, is_active }: any) => (
+      render: (transactionRef: string) => (
         <ActionButtons
-          id={id}
-          editUrl={`${Routes.merchant.list}/edit/${id}`}
-          detailsUrl={`/${slug}`}
+          id={transactionRef}
+          // editUrl={`${Routes.merchant.list}/edit/${transactionRef}`}
+          detailsUrl={`${Routes.transaction.list}/${transactionRef}`}
           // addTerminalUrl={`${Routes.merchant.list}/${id}/add-terminal`}
         />
       ),
     },
   ];
+  if (isFetching) {
+    return <Loader text={t('common:text-loading')} />;
+  }
 
   return (
-    <div className="mb-8 overflow-hidden rounded shadow">
-      <Table
-        //@ts-ignore
-        columns={columns}
-        emptyText={t('table:empty-table-data')}
-        data={merchants}
-        rowKey="id"
-        scroll={{ x: 900 }}
-      />
-    </div>
+    <>
+      <div className="mb-8 overflow-hidden rounded shadow">
+        <Table
+          //@ts-ignore
+          columns={columns}
+          emptyText={t('table:empty-table-data')}
+          data={merchants}
+          rowKey="id"
+          scroll={{ x: 900 }}
+        />
+      </div>
+      {!!paginatorInfo?.total && (
+        <div className="flex items-center justify-end">
+          <Pagination
+            total={paginatorInfo.total}
+            current={paginatorInfo.currentPage}
+            pageSize={paginatorInfo.perPage}
+            onChange={onPagination}
+          />
+        </div>
+      )}
+    </>
   );
 };
 
